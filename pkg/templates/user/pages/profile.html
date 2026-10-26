@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f8f8">
+    <title>My profile | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <style>
+        .profile-layout { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr); gap: 24px; padding-top: 34px; }
+        .profile-panel, .profile-aside { padding: 28px; border: 1px solid var(--line); border-radius: 26px; background: var(--panel); }
+        .profile-heading { display: flex; align-items: center; gap: 20px; margin-bottom: 28px; }
+        .profile-avatar { display: grid; place-items: center; width: 92px; height: 92px; flex: 0 0 auto; border-radius: 28px; background: linear-gradient(145deg, #ef64ef, #fcf300 62%, #1efc1e); color: #28202b; font-size: 2rem; font-weight: 800; }
+        .profile-heading h1 { margin: 0 0 6px; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.05em; }
+        .profile-heading p, .profile-aside p { margin: 0; color: var(--muted); line-height: 1.65; }
+        .profile-section { padding: 22px 0; border-top: 1px solid var(--line); }
+        .profile-section h2, .profile-aside h2 { margin: 0 0 14px; font-size: 1.1rem; }
+        .profile-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .detail-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: .82rem; }
+        .interest-list { display: flex; flex-wrap: wrap; gap: 9px; }
+        .interest-list span { padding: 8px 12px; border-radius: 999px; background: rgba(239,100,239,.12); font-size: .9rem; }
+        .profile-aside { align-self: start; }
+        .profile-aside .btn { margin-top: 20px; }
+        @media (max-width: 760px) { .profile-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .profile-panel, .profile-aside { padding: 20px; } .profile-heading { align-items: flex-start; flex-direction: column; } .profile-details { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('user.profile') }}" class="active" aria-current="page">My profile</a></li>
+            </ul>
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary small">My dashboard</a>
+        </nav>
+
+        <main class="profile-layout">
+            <section class="profile-panel" aria-labelledby="profile-title">
+                <div class="profile-heading">
+                    <div class="profile-avatar" aria-hidden="true">{{ user.username[:1]|upper }}</div>
+                    <div>
+                        <p class="eyebrow">Your introduction</p>
+                        <h1 id="profile-title">{{ user.first_name }} {{ user.last_name }}</h1>
+                        <p>{{ user.city }}, {{ user.country }}</p>
+                    </div>
+                </div>
+                <div class="profile-section">
+                    <h2>About me</h2>
+                    <p>{{ user.bio or "Add an introduction in settings to help other members get to know you." }}</p>
+                </div>
+                <div class="profile-section">
+                    <h2>My details</h2>
+                    <div class="profile-details">
+                        <div><span class="detail-label">Username</span><strong>{{ user.username }}</strong></div>
+                        <div><span class="detail-label">Email</span><strong>{{ user.email }}</strong></div>
+                        <div><span class="detail-label">Member since</span><strong>{{ user.created_at.strftime("%B %Y") }}</strong></div>
+                        <div><span class="detail-label">Profile status</span><strong>Visible to matches</strong></div>
+                    </div>
+                </div>
+            </section>
+            <aside class="profile-aside">
+                <p class="eyebrow">Make a great first impression</p>
+                <h2>Your story deserves to shine.</h2>
+                <p>A complete profile helps people discover what makes you you. Add a few details, share your interests, and keep your introduction up to date.</p>
+                <a href="{{ url_for('user.filter_users') }}" class="btn btn-primary">Update preferences</a>
+            </aside>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="description" content="Learn about VOVEOFRICA and our focus on meaningful connections.">
+    <title>About us | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informational.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt=""><span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('root.about') }}" class="active" aria-current="page">About</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+                <li><a href="{{ url_for('root.contact') }}">Contact</a></li>
+                <li><a href="{{ url_for('root.terms') }}">Terms</a></li>
+            </ul>
+            <a href="{{ url_for('user.register') }}" class="btn btn-primary small">Join us</a>
+        </nav>
+
+        <main class="info-page">
+            <header class="info-hero">
+                <p class="eyebrow">A place to meet with intention</p>
+                <h1>Good connections begin with being yourself.</h1>
+                <p>VOVEOFRICA is a dating community designed to help people discover one another, share meaningful conversations, and build connections at their own pace.</p>
+            </header>
+
+            <section class="info-card">
+                <p class="eyebrow">Why we’re here</p>
+                <h2>Make room for real connection.</h2>
+                <p>Meeting someone new should feel welcoming, personal, and respectful. We bring discovery, matches, and messaging together so you can get to know people who share your interests and relationship goals.</p>
+                <p>Every person’s story is different. Our aim is to offer a space where people can introduce themselves, find common ground, and decide for themselves where a conversation may lead.</p>
+            </section>
+
+            <section class="info-grid" aria-label="Our principles">
+                <article class="info-panel">
+                    <span class="info-icon" aria-hidden="true">✦</span>
+                    <h2>Meaningful discovery</h2>
+                    <p>Explore profiles, shared interests, and potential matches with room to connect at a comfortable pace.</p>
+                </article>
+                <article class="info-panel">
+                    <span class="info-icon" aria-hidden="true">♥</span>
+                    <h2>Respect for people</h2>
+                    <p>Kindness, honesty, and respect help make online interactions better for everyone in the community.</p>
+                </article>
+                <article class="info-panel">
+                    <span class="info-icon" aria-hidden="true">!</span>
+                    <h2>Safety matters</h2>
+                    <p>Use our support and reporting options to raise concerns. Stay thoughtful with personal details and when arranging to meet.</p>
+                </article>
+            </section>
+
+            <section class="info-card">
+                <p class="eyebrow">Be part of the community</p>
+                <h2>Your next conversation starts here.</h2>
+                <p>Create a profile, explore new connections, and reach out if you need a hand.</p>
+                <div class="info-links">
+                    <a href="{{ url_for('user.register') }}" class="btn btn-primary">Create an account</a>
+                    <a href="{{ url_for('root.support') }}" class="btn btn-secondary">Customer care</a>
+                    <a href="{{ url_for('root.contact') }}" class="btn btn-secondary">Contact us</a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="info-footer" aria-label="More information">
+            <a href="{{ url_for('root.about') }}">About us</a>
+            <a href="{{ url_for('root.support') }}">Customer care</a>
+            <a href="{{ url_for('root.contact') }}">Contact us</a>
+            <a href="{{ url_for('root.terms') }}">Terms and conditions</a>
+            <a href="{{ url_for('root.subscription') }}">Subscriptions</a>
+        </footer>
+    </div>
+</body>
+</html>

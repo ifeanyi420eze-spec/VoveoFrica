@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <style>
+        .settings-panel { max-width: 720px; margin: 40px auto; padding: clamp(22px, 4vw, 36px); border: 1px solid var(--line); border-radius: 24px; background: var(--panel); box-shadow: 0 18px 52px rgba(46,35,52,.07); }
+        .settings-panel h1 { margin-top: 0; }
+        .settings-panel p { color: var(--muted); line-height: 1.65; }
+        .settings-form { display: grid; gap: 12px; }
+        .settings-form label { font-weight: 700; }
+        .settings-form textarea { width: 100%; min-height: 160px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; font: inherit; resize: vertical; }
+        .settings-form textarea:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 2px; }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('user.profile') }}">My profile</a></li>
+            </ul>
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-secondary small">Dashboard</a>
+        </nav>
+
+        <main class="settings-panel">
+            <p class="eyebrow">Your account</p>
+            <h1>Profile settings</h1>
+            <p>Update the short introduction shown on your profile. Keep it respectful and avoid sharing sensitive details.</p>
+            <form class="settings-form" action="{{ url_for('user.settings') }}" method="post">
+                <label for="bio">Your bio</label>
+                <textarea id="bio" name="bio" maxlength="2000">{{ user.bio or "" }}</textarea>
+                <button class="btn btn-primary" type="submit">Save changes</button>
+            </form>
+        </main>
+    </div>
+</body>
+</html>

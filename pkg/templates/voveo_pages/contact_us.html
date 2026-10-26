@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="description" content="Get in touch with VOVEOFRICA for support, safety, or general enquiries.">
+    <title>Contact us | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informational.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt=""><span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('root.about') }}">About</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+                <li><a href="{{ url_for('root.contact') }}" class="active" aria-current="page">Contact</a></li>
+                <li><a href="{{ url_for('root.terms') }}">Terms</a></li>
+            </ul>
+            <a href="{{ url_for('root.support') }}" class="btn btn-primary small">Get help</a>
+        </nav>
+
+        <main class="info-page">
+            <header class="info-hero">
+                <p class="eyebrow">We’re listening</p>
+                <h1>Let’s find the right way to help.</h1>
+                <p>Choose the contact route that best matches your question. For safety concerns, use the dedicated report form so your issue reaches the right place.</p>
+            </header>
+
+            <section class="contact-options" aria-label="Contact options">
+                <article class="info-panel contact-option">
+                    <span class="info-icon" aria-hidden="true">♥</span>
+                    <h2>Safety or account concern</h2>
+                    <p>Report an inappropriate profile, harassment, suspicious activity, or another issue that needs review.</p>
+                    <a class="btn btn-primary" href="{{ url_for('root.support') }}">Go to customer care</a>
+                </article>
+                <article class="info-panel contact-option">
+                    <span class="info-icon" aria-hidden="true">?</span>
+                    <h2>General help</h2>
+                    <p>Find answers to common questions about accounts, using the platform, staying safe, and subscriptions.</p>
+                    <a class="btn btn-secondary" href="{{ url_for('root.support') }}">Visit customer care</a>
+                </article>
+            </section>
+
+            <section class="info-card">
+                <p class="eyebrow">Before you write</p>
+                <h2>Help us understand your request.</h2>
+                <p>Use the report form for issues that need follow-up. Include what happened and any relevant context, but never include your password, payment-card details, or verification codes. If you’re in immediate danger, contact your local emergency services.</p>
+                <div class="info-links">
+                    <a href="{{ url_for('root.about') }}" class="btn btn-secondary">About VOVEOFRICA</a>
+                    <a href="{{ url_for('root.terms') }}" class="btn btn-secondary">Terms and conditions</a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="info-footer" aria-label="More information">
+            <a href="{{ url_for('root.about') }}">About us</a>
+            <a href="{{ url_for('root.support') }}">Customer care</a>
+            <a href="{{ url_for('root.contact') }}">Contact us</a>
+            <a href="{{ url_for('root.terms') }}">Terms and conditions</a>
+            <a href="{{ url_for('root.subscription') }}">Subscriptions</a>
+        </footer>
+    </div>
+</body>
+</html>

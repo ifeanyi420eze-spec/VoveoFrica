@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Preferences | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/filter.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.filter_users') }}" class="active" aria-current="page">Filter</a></li>
+            </ul>
+            <a href="{{ url_for('user.chats') }}" class="btn btn-primary small">Messages</a>
+        </nav>
+
+        <main class="filter-layout">
+            <section class="filter-panel">
+                <p class="eyebrow">Personalize your match feed</p>
+                <h1>Who are you looking for?</h1>
+
+                <div class="form-block">
+                    <label>Age range</label>
+                    <div class="range-row">
+                        <span>22</span>
+                        <input type="range" min="18" max="45" value="28">
+                        <span>35+</span>
+                    </div>
+                </div>
+
+                <div class="form-block">
+                    <label>Distance</label>
+                    <select>
+                        <option>Within 20 km</option>
+                        <option>Within 50 km</option>
+                        <option>Within 100 km</option>
+                        <option>Anywhere</option>
+                    </select>
+                </div>
+
+                <div class="form-block">
+                    <label>Relationship goals</label>
+                    <div class="checkbox-grid">
+                        <label><input type="checkbox" checked> Long-term</label>
+                        <label><input type="checkbox"> Casual dating</label>
+                        <label><input type="checkbox" checked> Friendship</label>
+                        <label><input type="checkbox"> Marriage</label>
+                    </div>
+                </div>
+
+                <div class="form-block">
+                    <label>Interests</label>
+                    <div class="tag-wrap">
+                        <span class="tag active">Travel</span>
+                        <span class="tag">Music</span>
+                        <span class="tag">Books</span>
+                        <span class="tag">Fitness</span>
+                        <span class="tag">Food</span>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button class="btn btn-secondary">Reset</button>
+                    <button class="btn btn-primary">Save preferences</button>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

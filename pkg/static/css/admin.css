@@ -1,0 +1,151 @@
+.admin-page {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 34px 28px 60px;
+}
+
+.admin-nav,
+.admin-card,
+.table-panel {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 16px 42px rgba(46, 35, 52, 0.06);
+}
+
+.admin-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 20px;
+}
+
+.admin-nav a {
+  text-decoration: none;
+}
+
+.admin-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  color: var(--muted);
+}
+
+.admin-links a[aria-current="page"] {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.admin-header,
+.page-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 36px 0 22px;
+}
+
+.admin-header h1,
+.page-heading h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.05em;
+}
+
+.admin-header p:last-child,
+.page-heading p:last-child {
+  color: var(--muted);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.stat-card {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 16px 42px rgba(46, 35, 52, 0.06);
+}
+
+.stat-card span {
+  color: var(--muted);
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 14px;
+  font-size: 2.5rem;
+}
+
+.admin-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.table-panel {
+  overflow-x: auto;
+  padding: 8px 22px;
+}
+
+.table-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table-panel th,
+.table-panel td {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.table-panel th {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.table-panel tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-panel .empty-state {
+  padding: 28px 12px;
+  color: var(--muted);
+  text-align: center;
+  white-space: normal;
+}
+
+.status.pending {
+  color: #765100;
+  background: rgba(252, 243, 0, 0.28);
+}
+
+@media (max-width: 650px) {
+  .admin-page {
+    padding: 18px 16px 40px;
+  }
+
+  .admin-nav {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

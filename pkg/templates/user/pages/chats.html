@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chats | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chats.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}" class="active" aria-current="page">Chats</a></li>
+            </ul>
+            <a href="{{ url_for('user.matches') }}" class="btn btn-primary small">Your matches</a>
+        </nav>
+
+        <main class="chat-shell">
+            <section class="chat-list" aria-labelledby="messages-title">
+                <header class="chat-header">
+                    <h1 id="messages-title">Messages</h1>
+                </header>
+
+                {% if chat_list %}
+                    {% for other_user, latest_message in chat_list %}
+                    <a class="chat-item" href="{{ url_for('user.realtime_chat', other_user_id=other_user.id) }}">
+                        <span class="avatar rose" aria-hidden="true">{{ other_user.username[:1]|upper }}</span>
+                        <span class="chat-copy">
+                            <span class="name-line"><strong>{{ other_user.username }}</strong></span>
+                            <span class="chat-preview-text">
+                                {% if latest_message %}
+                                    {% if latest_message.sender_id == other_user.id %}{{ other_user.username }}: {% else %}You: {% endif %}{{ latest_message.text }}
+                                {% else %}
+                                    You matched. Start a conversation.
+                                {% endif %}
+                            </span>
+                        </span>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-chats">
+                        <h2>No conversations yet</h2>
+                        <p>Your matched conversations will appear here. Explore profiles and make a connection to start chatting.</p>
+                        <a href="{{ url_for('user.discover') }}" class="btn btn-primary">Discover people</a>
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="chat-preview" aria-labelledby="inbox-title">
+                <div class="inbox-welcome">
+                    <span class="welcome-icon" aria-hidden="true">♥</span>
+                    <h2 id="inbox-title">Your conversations</h2>
+                    <p>Choose a match to open your private, real-time conversation.</p>
+                    {% if chat_list %}
+                    <a href="{{ url_for('user.realtime_chat', other_user_id=chat_list[0][0].id) }}" class="btn btn-primary">Open your latest chat</a>
+                    {% else %}
+                    <a href="{{ url_for('user.matches') }}" class="btn btn-primary">View your matches</a>
+                    {% endif %}
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

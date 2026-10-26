@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match management | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <main class="admin-page">
+        <nav class="admin-nav" aria-label="Admin navigation">
+            <a class="brand" href="{{ url_for('admin.dashboard') }}">VOVEOFRICA <span>Admin</span></a>
+            <div class="admin-links"><a href="{{ url_for('admin.dashboard') }}">Overview</a><a href="{{ url_for('admin.users') }}">Members</a><a href="{{ url_for('admin.matches') }}" aria-current="page">Matches</a><a href="{{ url_for('admin.reports') }}">Reports</a></div>
+        </nav>
+        <header class="page-heading">
+            <div><p class="eyebrow">Community connections</p><h1>Match management</h1><p>Review connections created across the community.</p></div>
+            <a class="btn btn-secondary" href="{{ url_for('admin.dashboard') }}">Back to overview</a>
+        </header>
+        <section class="table-panel" aria-label="Match list">
+            <table>
+                <thead><tr><th scope="col">Match</th><th scope="col">Member one</th><th scope="col">Member two</th><th scope="col">Created</th></tr></thead>
+                <tbody>
+                    {% for match in matches %}
+                    <tr>
+                        <td>#{{ match.id }}</td>
+                        <td>{{ match.first_user.username }}</td>
+                        <td>{{ match.second_user.username }}</td>
+                        <td>{{ match.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="empty-state">No matches to display yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/discover.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}" class="active" aria-current="page">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+            </ul>
+            <a href="{{ url_for('user.filter_users') }}" class="btn btn-primary small">Filter</a>
+        </nav>
+
+        <main class="discover-layout">
+            <section class="feed-panel">
+                <div class="feed-header">
+                    <div>
+                        <p class="eyebrow">Trending in your city</p>
+                        <h1>Discover your next connection</h1>
+                    </div>
+                    <a href="{{ url_for('user.filter_users') }}" class="btn btn-secondary small">Preferences</a>
+                </div>
+
+                <div class="profile-grid">
+                    {% for candidate in users %}
+                    <article class="profile-card">
+                        <div class="profile-img rose-bg" aria-hidden="true">
+                            <span class="avatar accent">{{ candidate.username[:1]|upper }}</span>
+                        </div>
+                        <div class="profile-body">
+                            <div class="name-row">
+                                <h3>{{ candidate.first_name }} {{ candidate.last_name }}</h3>
+                            </div>
+                            <p>{{ candidate.bio or "This member has not added an introduction yet." }}</p>
+                            <p class="member-location">{{ candidate.city }}, {{ candidate.country }}</p>
+                            <div class="tag-row">
+                                <form action="{{ url_for('user.like_user', liked_id=candidate.id) }}" method="post">
+                                    <button class="btn btn-primary small" type="submit">Like profile</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                    {% else %}
+                    <div class="empty-discovery">
+                        <h2>No profiles found</h2>
+                        <p>There are no other member profiles to show right now. Try changing your location filters or check back later.</p>
+                        <a href="{{ url_for('user.filter_users') }}" class="btn btn-secondary">Adjust filters</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

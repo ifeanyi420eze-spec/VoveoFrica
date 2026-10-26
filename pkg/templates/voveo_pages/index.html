@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOVEOFRICA | the place to find LOVE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informational.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Connections</a></li>
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Explore</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+                <li><a href="{{ url_for('root.terms') }}">Terms</a></li>
+                <li><a href="{{ url_for('root.subscription') }}">Plans</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="{{ url_for('user.login') }}">Login</a>
+                <a href="{{ url_for('user.register') }}" class="btn btn-primary">Register</a>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">meet your match</p>
+                <h1>Find love in a community built for real connection.</h1>
+                <p class="lede">Dating should feel exciting, safe, and personal. VOVEOFRICA helps you meet people who share your values, goals, and energy.</p>
+                <div class="cta-row">
+                    <a href="{{ url_for('user.discover') }}" class="btn btn-primary">Start Swiping</a>
+                    <a href="{{ url_for('user.matches') }}" class="btn btn-secondary">See Matches</a>
+                </div>
+                <div class="stats-row">
+                    <div>
+                        <strong>{{ member_count }}</strong>
+                        <span>registered members</span>
+                    </div>
+                    <div>
+                        <strong>{{ match_count }}</strong>
+                        <span>connections made</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="profile-card main-card">
+                    <div class="cover-image" aria-hidden="true"></div>
+                    <div class="card-meta">
+                        <div>
+                            <h2>Real connections</h2>
+                            <span>Built around your community</span>
+                        </div>
+                        <a class="mini-btn" href="{{ url_for('user.register') }}" aria-label="Create an account">❤</a>
+                    </div>
+                </div>
+                <div class="floating-card">
+                    <span class="tag">Meet with intention</span>
+                    <p>Join VOVEOFRICA to discover members and make meaningful connections.</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="feature-grid">
+            <section class="feature-panel">
+                <div class="icon">✦</div>
+                <h3>Smart matching</h3>
+                <p>Match with people based on lifestyle, values, and relationship goals.</p>
+            </section>
+            <section class="feature-panel">
+                <div class="icon">💬</div>
+                <h3>Meaningful chats</h3>
+                <p>Start conversations that feel natural, respectful, and easy to continue.</p>
+            </section>
+            <section class="feature-panel">
+                <div class="icon">🛡️</div>
+                <h3>Safe community</h3>
+                <p>We protect your experience with verification and easy reporting tools.</p>
+            </section>
+        </main>
+        <footer class="info-footer" aria-label="More information">
+            <a href="{{ url_for('root.about') }}">About us</a>
+            <a href="{{ url_for('root.support') }}">Customer care</a>
+            <a href="{{ url_for('root.contact') }}">Contact us</a>
+            <a href="{{ url_for('root.terms') }}">Terms and conditions</a>
+            <a href="{{ url_for('root.subscription') }}">Subscriptions</a>
+        </footer>
+    </div>
+</body>
+</html>

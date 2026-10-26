@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="description" content="Learn how browser cookies and session storage are used by VOVEOFRICA.">
+    <title>Cookie policy | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informational.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('root.about') }}">About</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+                <li><a href="{{ url_for('root.privacy_policy') }}">Privacy</a></li>
+                <li><a href="{{ url_for('root.cookie_policy') }}" class="active" aria-current="page">Cookies</a></li>
+            </ul>
+            <a href="{{ url_for('root.contact') }}" class="btn btn-primary small">Contact us</a>
+        </nav>
+
+        <main class="info-page">
+            <header class="info-hero">
+                <p class="eyebrow">Browser storage</p>
+                <h1>Cookie policy</h1>
+                <p>Here is what to know about browser cookies when using the current VOVEOFRICA application.</p>
+            </header>
+
+            <aside class="info-card" aria-label="Draft cookie notice">
+                <strong>Draft for review</strong>
+                <p>Review this notice against the production configuration and any third-party services before publishing. Cookie behavior can change when analytics, payments, or other integrations are added.</p>
+            </aside>
+
+            <section class="info-card">
+                <h2>Essential session cookie</h2>
+                <p>The application uses Flask's session mechanism to keep track of signed-in users and other session state. This cookie supports core account features and is not an advertising cookie.</p>
+            </section>
+
+            <section class="info-card">
+                <h2>Optional cookies and browser controls</h2>
+                <p>No analytics or advertising cookie integration is configured in the current application code. If optional tracking is added, this policy and any required consent controls should be updated before it is enabled.</p>
+                <p>You can use your browser settings to inspect or clear cookies. Clearing the session cookie may sign you out or interrupt features that depend on your session.</p>
+            </section>
+
+            <div class="info-links">
+                <a href="{{ url_for('root.privacy_policy') }}" class="btn btn-primary">Read the privacy notice</a>
+                <a href="{{ url_for('root.contact') }}" class="btn btn-secondary">Contact us</a>
+            </div>
+        </main>
+
+        <footer class="info-footer" aria-label="More information">
+            <a href="{{ url_for('root.about') }}">About us</a>
+            <a href="{{ url_for('root.support') }}">Customer care</a>
+            <a href="{{ url_for('root.contact') }}">Contact us</a>
+            <a href="{{ url_for('root.terms') }}">Terms and conditions</a>
+            <a href="{{ url_for('root.privacy_policy') }}">Privacy</a>
+        </footer>
+    </div>
+</body>
+</html>

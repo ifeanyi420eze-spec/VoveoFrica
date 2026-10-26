@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member management | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <main class="admin-page">
+        <nav class="admin-nav" aria-label="Admin navigation">
+            <a class="brand" href="{{ url_for('admin.dashboard') }}">VOVEOFRICA <span>Admin</span></a>
+            <div class="admin-links"><a href="{{ url_for('admin.dashboard') }}">Overview</a><a href="{{ url_for('admin.users') }}" aria-current="page">Members</a><a href="{{ url_for('admin.matches') }}">Matches</a><a href="{{ url_for('admin.reports') }}">Reports</a></div>
+        </nav>
+        <header class="page-heading">
+            <div><p class="eyebrow">Community directory</p><h1>Member management</h1><p>Review and manage community accounts.</p></div>
+            <a class="btn btn-secondary" href="{{ url_for('admin.dashboard') }}">Back to overview</a>
+        </header>
+        <section class="table-panel" aria-label="Member list">
+            <table>
+                <thead><tr><th scope="col">Member</th><th scope="col">Email</th><th scope="col">Joined</th><th scope="col">Account</th></tr></thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.first_name }} {{ user.last_name }} (@{{ user.username }})</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td><span class="status online">Active</span></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="empty-state">No members to display yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

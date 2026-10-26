@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Likes | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <style>
+        .likes-page { max-width: 960px; margin: 36px auto; }
+        .likes-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+        .likes-panel { padding: 24px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); box-shadow: 0 18px 52px rgba(46,35,52,.06); }
+        .likes-panel h1, .likes-panel h2 { margin-top: 0; }
+        .likes-list { display: grid; gap: 12px; padding: 0; list-style: none; }
+        .likes-list li { padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
+        .likes-list a { font-weight: 700; }
+        .empty-state { color: var(--muted); line-height: 1.6; }
+        @media (max-width: 650px) { .likes-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('user.likes') }}" class="active" aria-current="page">Likes</a></li>
+            </ul>
+            <a href="{{ url_for('user.profile') }}" class="btn btn-secondary small">My profile</a>
+        </nav>
+
+        <main class="likes-page">
+            <header class="page-heading">
+                <p class="eyebrow">Your activity</p>
+                <h1>Likes</h1>
+                <p>See people who liked you and the profiles you have liked.</p>
+            </header>
+            <div class="likes-grid">
+                <section class="likes-panel" aria-labelledby="received-title">
+                    <h2 id="received-title">People who liked you</h2>
+                    {% if likes_received %}
+                    <ul class="likes-list">
+                        {% for like in likes_received %}
+                        <li><a href="{{ url_for('user.profile') }}">{{ like.liker.username }}</a><br><span class="empty-state">Liked you {{ like.created_at.strftime("%b %d, %Y") }}.</span></li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="empty-state">No likes received yet. Keep your profile up to date and check back soon.</p>
+                    {% endif %}
+                </section>
+                <section class="likes-panel" aria-labelledby="sent-title">
+                    <h2 id="sent-title">Profiles you liked</h2>
+                    {% if likes_sent %}
+                    <ul class="likes-list">
+                        {% for like in likes_sent %}
+                        <li><a href="{{ url_for('user.discover') }}">{{ like.liked_user.username }}</a><br><span class="empty-state">Liked {{ like.created_at.strftime("%b %d, %Y") }}.</span></li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="empty-state">You have not liked any profiles yet. Explore Discover to meet people.</p>
+                    {% endif %}
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

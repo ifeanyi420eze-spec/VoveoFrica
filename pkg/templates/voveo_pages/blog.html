@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="description" content="Dating, connection, and online-safety updates from VOVEOFRICA.">
+    <title>Journal | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informational.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('root.about') }}">About</a></li>
+                <li><a href="{{ url_for('root.blog') }}" class="active" aria-current="page">Journal</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+                <li><a href="{{ url_for('root.contact') }}">Contact</a></li>
+            </ul>
+            <a href="{{ url_for('root.contact') }}" class="btn btn-primary small">Get in touch</a>
+        </nav>
+
+        <main class="info-page">
+            <header class="info-hero">
+                <p class="eyebrow">Stories and helpful ideas</p>
+                <h1>The VOVEOFRICA journal</h1>
+                <p>Thoughtful notes on meeting people, building healthy connections, and looking after yourself online.</p>
+            </header>
+
+            <section class="info-card" aria-labelledby="journal-title">
+                <p class="eyebrow">Coming soon</p>
+                <h2 id="journal-title">Our first stories are being prepared.</h2>
+                <p>There are no published journal posts yet. In the meantime, visit customer care for practical safety guidance and answers to common questions.</p>
+                <div class="info-links">
+                    <a href="{{ url_for('root.support') }}" class="btn btn-primary">Visit customer care</a>
+                    <a href="{{ url_for('root.about') }}" class="btn btn-secondary">About VOVEOFRICA</a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="info-footer" aria-label="More information">
+            <a href="{{ url_for('root.about') }}">About us</a>
+            <a href="{{ url_for('root.support') }}">Customer care</a>
+            <a href="{{ url_for('root.contact') }}">Contact us</a>
+            <a href="{{ url_for('root.terms') }}">Terms and conditions</a>
+            <a href="{{ url_for('root.privacy_policy') }}">Privacy</a>
+        </footer>
+    </div>
+</body>
+</html>

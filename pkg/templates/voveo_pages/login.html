@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <title>Login</title>
+</head>
+
+<body>
+    <div>
+        <nav class="topbar">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Connections</a></li>
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Explore</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+                <li><a href="{{ url_for('root.terms') }}">Terms</a></li>
+                <li><a href="{{ url_for('root.subscription') }}">Plans</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="{{ url_for('user.login') }}">Login</a>
+                <a href="{{ url_for('user.register') }}" class="btn btn-primary">Register</a>
+            </div>
+        </nav>
+
+        <div class="login-card">
+            <h1>Login to Your Account</h1>
+            <p class="login-description">Enter your username or email and password to continue.</p>
+
+            {% if error %}<p role="alert">{{ error }}</p>{% endif %}
+            <form action="{{ url_for('user.login') }}" method="POST">
+                <div class="form-group">
+                    <label for="identity">Username/Email:</label>
+                    <input type="text" name="identity" id="identity" placeholder="username or password"
+                        autocomplete="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" id="password" placeholder="password"
+                        autocomplete="current-password" required>
+                </div>
+
+                <label class="remember-me" for="remember">
+                    <input type="checkbox" name="remember" id="remember" value="1">
+                    <span>Remember me</span>
+                </label>
+
+                <button type="submit">Login</button>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('root.support') }}" class="active" aria-current="page">Support</a></li>
+            </ul>
+            <a href="{{ url_for('root.support') }}" class="btn btn-primary small">Customer care</a>
+        </nav>
+
+        <main class="report-layout">
+            <section class="report-card">
+                <p class="eyebrow">Safety and support</p>
+                <h1>Report an issue</h1>
+                <p class="lede">Tell us what happened so we can review it promptly and keep the community safe.</p>
+
+                <form>
+                    <label>Issue type</label>
+                    <select>
+                        <option>Harassment</option>
+                        <option>Fake profile</option>
+                        <option>Inappropriate content</option>
+                        <option>Spam</option>
+                        <option>Other</option>
+                    </select>
+
+                    <label>How can we help?</label>
+                    <textarea rows="6" placeholder="Briefly describe what happened..."></textarea>
+
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="anonymous">
+                        <label for="anonymous">Submit anonymously</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Send report</button>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

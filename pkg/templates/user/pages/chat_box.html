@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block page_title %}Chat | VOVEOFRICA{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_box.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}" class="active" aria-current="page">Chats</a></li>
+            </ul>
+            <a href="{{ url_for('user.chats') }}" class="btn btn-secondary small">All chats</a>
+        </nav>
+
+        <main class="chat-window" aria-labelledby="chat-title">
+            <header class="chat-header">
+                <div class="profile-pill">
+                    <div class="avatar rose" aria-hidden="true">{{ other_user.username[:1]|upper }}</div>
+                    <div>
+                        <h1 id="chat-title">{{ other_user.username }}</h1>
+                        <span id="connection-status" role="status" aria-live="polite">Connecting…</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('user.report_user', reported_user_id=other_user.id) }}" class="btn btn-secondary small">Report</a>
+            </header>
+
+            <p id="chat-error" class="chat-error" role="alert" aria-live="assertive"></p>
+
+            <ol class="messages" id="messages" aria-label="Conversation messages" aria-live="polite">
+                {% for message in messages %}
+                <li class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
+                    <span class="message-sender">{% if message.sender_id == current_user.id %}You{% else %}{{ other_user.username }}{% endif %}</span>
+                    <span class="message-text">{{ message.text }}</span>
+                    <time datetime="{{ message.sent_at.isoformat() }}">{{ message.sent_at.strftime("%b %d, %H:%M") }}</time>
+                </li>
+                {% else %}
+                <li class="empty-conversation" id="empty-conversation">Say hello and start your conversation.</li>
+                {% endfor %}
+            </ol>
+
+            <form class="composer" id="chat-form">
+                <label class="visually-hidden" for="message-input">Type a message</label>
+                <input id="message-input" name="text" type="text" maxlength="5000" placeholder="Write a message..." autocomplete="off" required>
+                <button id="send-button" type="submit" class="btn btn-primary" disabled>Send</button>
+            </form>
+        </main>
+    </div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script>
+        const otherUserId = {{ other_user.id|tojson }};
+        const socket = io("/chat");
+        const messages = document.getElementById("messages");
+        const emptyConversation = document.getElementById("empty-conversation");
+        const form = document.getElementById("chat-form");
+        const input = document.getElementById("message-input");
+        const sendButton = document.getElementById("send-button");
+        const status = document.getElementById("connection-status");
+        const error = document.getElementById("chat-error");
+
+        function appendMessage(message) {
+            if (emptyConversation) {
+                emptyConversation.remove();
+            }
+
+            const item = document.createElement("li");
+            item.className = message.sender_id === {{ current_user.id|tojson }} ? "message sent" : "message received";
+
+            const sender = document.createElement("span");
+            sender.className = "message-sender";
+            sender.textContent = message.sender_id === {{ current_user.id|tojson }} ? "You" : message.sender_name;
+
+            const text = document.createElement("span");
+            text.className = "message-text";
+            text.textContent = message.text;
+
+            const time = document.createElement("time");
+            time.dateTime = message.sent_at;
+            time.textContent = new Date(message.sent_at).toLocaleString();
+
+            item.append(sender, text, time);
+            messages.appendChild(item);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        socket.on("connect", () => {
+            status.textContent = "Connected";
+            error.textContent = "";
+            socket.emit("join_conversation", { other_user_id: otherUserId }, (result) => {
+                if (!result || !result.ok) {
+                    error.textContent = result?.error || "Could not join this conversation.";
+                    sendButton.disabled = true;
+                    return;
+                }
+                sendButton.disabled = false;
+                input.focus();
+            });
+        });
+
+        socket.on("connect_error", () => {
+            status.textContent = "Connection unavailable";
+            error.textContent = "Chat could not connect. Check your connection and try again.";
+            sendButton.disabled = true;
+        });
+
+        socket.on("disconnect", () => {
+            status.textContent = "Disconnected. Reconnecting…";
+            sendButton.disabled = true;
+        });
+
+        socket.on("new_message", appendMessage);
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const text = input.value.trim();
+            if (!text || sendButton.disabled) return;
+
+            error.textContent = "";
+            sendButton.disabled = true;
+            socket.emit("send_message", { other_user_id: otherUserId, text }, (result) => {
+                if (!result || !result.ok) {
+                    error.textContent = result?.error || "The message could not be sent.";
+                } else {
+                    input.value = "";
+                }
+                sendButton.disabled = !socket.connected;
+                input.focus();
+            });
+        });
+
+        window.addEventListener("pagehide", () => {
+            if (socket.connected) {
+                socket.emit("leave_conversation", { other_user_id: otherUserId });
+                socket.disconnect();
+            }
+        });
+
+        messages.scrollTop = messages.scrollHeight;
+    </script>
+</body>
+</html>

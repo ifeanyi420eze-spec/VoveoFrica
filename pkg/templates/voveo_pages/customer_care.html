@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="description" content="Find help, safety resources, and answers to common questions about VOVEOFRICA.">
+    <title>Customer care &amp; support | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informational.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt=""><span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('root.about') }}">About</a></li>
+                <li><a href="{{ url_for('root.support') }}" class="active" aria-current="page">Support</a></li>
+                <li><a href="{{ url_for('root.contact') }}">Contact</a></li>
+                <li><a href="{{ url_for('root.terms') }}">Terms</a></li>
+            </ul>
+            <a href="{{ url_for('root.contact') }}" class="btn btn-primary small">Report an issue</a>
+        </nav>
+
+        <main class="info-page">
+            <header class="info-hero">
+                <p class="eyebrow">Here when you need us</p>
+                <h1>A little help goes a long way.</h1>
+                <p>Find quick answers, get help with your account, or let us know if something doesn’t feel right. Your safety and comfort matter.</p>
+            </header>
+
+            <section class="info-grid" aria-label="Support topics">
+                <article class="info-panel">
+                    <span class="info-icon" aria-hidden="true">?</span>
+                    <h2>Account help</h2>
+                    <p>Having trouble signing in or getting started? Check your login details or create an account to join the community.</p>
+                    <a href="{{ url_for('user.login') }}">Go to login</a>
+                </article>
+                <article class="info-panel">
+                    <span class="info-icon" aria-hidden="true">♥</span>
+                    <h2>Safety &amp; reporting</h2>
+                    <p>Report a profile, message, or experience that concerns you. Share the details so the community team can review it.</p>
+                    <a href="{{ url_for('root.contact') }}">Report an issue</a>
+                </article>
+                <article class="info-panel">
+                    <span class="info-icon" aria-hidden="true">↗</span>
+                    <h2>Plans &amp; billing</h2>
+                    <p>Review the available subscription lengths and prices before you decide which plan suits you.</p>
+                    <a href="{{ url_for('root.subscription') }}">View subscription plans</a>
+                </article>
+            </section>
+
+            <section class="info-card" aria-labelledby="faq-title">
+                <p class="eyebrow">Frequently asked questions</p>
+                <h2 id="faq-title">Common questions</h2>
+                <div class="faq-list">
+                    <details class="faq-item">
+                        <summary>How do I get started?</summary>
+                        <p>Create an account, complete your profile, then visit Discover to explore connections. You can also review your matches and messages from the navigation.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>How can I report a concern?</summary>
+                        <p>Use our <a href="{{ url_for('root.contact') }}">contact options</a> to tell us what happened. Include relevant details, but avoid sharing passwords or other sensitive account credentials.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Where can I see subscription prices?</summary>
+                        <p>Visit the <a href="{{ url_for('root.subscription') }}">subscription plans</a> page to view the available periods and prices in Nigerian naira.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Is VOVEOFRICA responsible for in-person meetings?</summary>
+                        <p>We cannot guarantee another user’s identity, conduct, or offline safety. Take time to get to know someone, protect your personal information, and choose a public place if you decide to meet.</p>
+                    </details>
+                </div>
+            </section>
+
+            <div class="info-links">
+                <a href="{{ url_for('root.contact') }}" class="btn btn-primary">Contact us</a>
+                <a href="{{ url_for('root.terms') }}" class="btn btn-secondary">Read the terms</a>
+            </div>
+        </main>
+
+        <footer class="info-footer" aria-label="More information">
+            <a href="{{ url_for('root.about') }}">About us</a>
+            <a href="{{ url_for('root.support') }}">Customer care</a>
+            <a href="{{ url_for('root.contact') }}">Contact us</a>
+            <a href="{{ url_for('root.terms') }}">Terms and conditions</a>
+            <a href="{{ url_for('root.subscription') }}">Subscriptions</a>
+        </footer>
+    </div>
+</body>
+</html>

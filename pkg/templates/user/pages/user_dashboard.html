@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f8f8">
+    <title>Your dashboard | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <style>
+        .dashboard { padding-top: 36px; }
+        .welcome { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 26px; }
+        .welcome h1 { margin: 0; font-size: clamp(2.2rem, 4vw, 3.3rem); letter-spacing: -.05em; }
+        .welcome p:last-child { color: var(--muted); margin: 8px 0 0; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
+        .stat-card, .dashboard-panel { padding: 22px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); }
+        .stat-card span { display: block; color: var(--muted); font-size: .9rem; }
+        .stat-card strong { display: block; margin-top: 10px; font-size: 2rem; }
+        .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr); gap: 20px; }
+        .dashboard-panel h2 { margin: 0 0 16px; font-size: 1.2rem; }
+        .activity-item { display: flex; justify-content: space-between; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); }
+        .activity-item p { margin: 0; }
+        .activity-item span { color: var(--muted); font-size: .88rem; }
+        .quick-links { display: grid; gap: 10px; }
+        .quick-links a { padding: 13px 14px; border-radius: 14px; background: rgba(30,252,30,.12); font-weight: 600; }
+        @media (max-width: 760px) { .dashboard-grid { grid-template-columns: 1fr; } .welcome { align-items: flex-start; flex-direction: column; } }
+        @media (max-width: 560px) { .stats-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard"><img src="{{ url_for('static', filename='images/logo.png') }}" alt=""><span>VOVEOFRICA</span></a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('user.profile') }}">My profile</a></li>
+            </ul>
+            <a href="{{ url_for('user.profile') }}" class="btn btn-secondary small">View profile</a>
+        </nav>
+        <main class="dashboard">
+            <header class="welcome">
+                <div>
+                    <p class="eyebrow">Your VOVEOFRICA space</p>
+                    <h1>Welcome back, {{ user.first_name }}.</h1>
+                    <p>Here’s a little snapshot of your connections so far.</p>
+                </div>
+                <a href="{{ url_for('user.discover') }}" class="btn btn-primary">Discover people</a>
+            </header>
+            <section class="stats-grid" aria-label="Your activity">
+                <article class="stat-card"><span>Matches</span><strong>{{ match_count }}</strong></article>
+                <article class="stat-card"><span>Conversations</span><strong>{{ conversation_count }}</strong></article>
+                <article class="stat-card"><span>Profile completeness</span><strong>{{ profile_completion }}%</strong></article>
+            </section>
+            <div class="dashboard-grid">
+                <section class="dashboard-panel">
+                    <h2>Recent activity</h2>
+                    <div class="activity-item"><p><strong>A new connection is waiting.</strong><br><span>See who you matched with today.</span></p><a href="{{ url_for('user.matches') }}" aria-label="View new matches">View</a></div>
+                    <div class="activity-item"><p><strong>Your inbox is ready.</strong><br><span>Pick up where the conversation left off.</span></p><a href="{{ url_for('user.chats') }}" aria-label="Open messages">Open</a></div>
+                    <div class="activity-item"><p><strong>Make your profile more you.</strong><br><span>A few extra details can make a great introduction.</span></p><a href="{{ url_for('user.profile') }}" aria-label="Edit profile">Edit</a></div>
+                </section>
+                <aside class="dashboard-panel">
+                    <h2>Quick links</h2>
+                    <div class="quick-links">
+                        <a href="{{ url_for('user.discover') }}">Explore new connections <span aria-hidden="true">→</span></a>
+                        <a href="{{ url_for('user.filter_users') }}">Adjust your preferences <span aria-hidden="true">→</span></a>
+                        <a href="{{ url_for('root.support') }}">Visit safety and support <span aria-hidden="true">→</span></a>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

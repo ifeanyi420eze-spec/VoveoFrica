@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="description" content="Read VOVEOFRICA's accessibility statement and contact us about barriers.">
+    <title>Accessibility | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informational.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('root.about') }}">About</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+                <li><a href="{{ url_for('root.accessibility') }}" class="active" aria-current="page">Accessibility</a></li>
+                <li><a href="{{ url_for('root.contact') }}">Contact</a></li>
+            </ul>
+            <a href="{{ url_for('root.contact') }}" class="btn btn-primary small">Report a barrier</a>
+        </nav>
+
+        <main class="info-page">
+            <header class="info-hero">
+                <p class="eyebrow">A more welcoming experience</p>
+                <h1>Accessibility statement</h1>
+                <p>We want VOVEOFRICA to be usable by as many people as possible and welcome feedback that helps us improve.</p>
+            </header>
+
+            <aside class="info-card" aria-label="Accessibility review status">
+                <strong>Ongoing work</strong>
+                <p>The application has not yet been independently audited against an accessibility standard. This page describes our intent and a way to report barriers; it is not a claim of full conformance.</p>
+            </aside>
+
+            <section class="info-grid" aria-label="Accessibility commitments">
+                <article class="info-panel">
+                    <h2>Keep improving</h2>
+                    <p>We aim to improve page structure, readable content, keyboard access, and responsive layouts as the product develops.</p>
+                </article>
+                <article class="info-panel">
+                    <h2>Tell us what blocked you</h2>
+                    <p>When reporting an accessibility barrier, include the page, the task you were trying to complete, and any assistive technology details you are comfortable sharing.</p>
+                </article>
+                <article class="info-panel">
+                    <h2>Protect your information</h2>
+                    <p>Please do not include passwords, verification codes, or sensitive personal information in an accessibility request.</p>
+                </article>
+            </section>
+
+            <div class="info-links">
+                <a href="{{ url_for('root.contact') }}" class="btn btn-primary">Contact us about accessibility</a>
+                <a href="{{ url_for('root.support') }}" class="btn btn-secondary">Visit customer care</a>
+            </div>
+        </main>
+
+        <footer class="info-footer" aria-label="More information">
+            <a href="{{ url_for('root.about') }}">About us</a>
+            <a href="{{ url_for('root.support') }}">Customer care</a>
+            <a href="{{ url_for('root.contact') }}">Contact us</a>
+            <a href="{{ url_for('root.terms') }}">Terms and conditions</a>
+            <a href="{{ url_for('root.privacy_policy') }}">Privacy</a>
+        </footer>
+    </div>
+</body>
+</html>

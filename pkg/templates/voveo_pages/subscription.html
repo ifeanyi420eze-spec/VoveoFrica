@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="description" content="Explore VOVEOFRICA subscription plans and billing periods.">
+    <title>Subscriptions | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/subscription.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('root.subscription') }}" class="active" aria-current="page">Plans</a></li>
+            </ul>
+            <a href="{{ url_for('user.login') }}" class="btn btn-primary small">Log in</a>
+        </nav>
+
+        <main class="subscription-page">
+            <header class="subscription-hero">
+                <p class="eyebrow">More ways to connect</p>
+                <h1>Choose the pace that works for you.</h1>
+                <p>Pick a subscription period to suit your plans. Every option is priced in Nigerian naira.</p>
+            </header>
+
+            {% if plans %}
+            <section class="plans-grid" aria-label="Subscription plans">
+                {% for plan in plans %}
+                <article class="plan-card{% if plan.is_featured %} plan-featured{% endif %}">
+                    {% if plan.is_featured %}<span class="popular-badge">Popular choice</span>{% endif %}
+                    <div class="plan-topline"><h2>{{ plan.name }}</h2><span class="plan-duration">{{ plan.duration_days }} days</span></div>
+                    <p class="plan-description">{{ plan.description }}</p>
+                    <p class="plan-price"><strong>₦{{ "{:,.0f}".format(plan.amount_ngn) }}</strong><span>/ {{ plan.duration_days }} days</span></p>
+                    <a class="btn {% if plan.is_featured %}btn-primary{% else %}btn-secondary{% endif %} plan-action" href="{{ url_for('user.register') }}">Choose {{ plan.name }}</a>
+                </article>
+                {% endfor %}
+            </section>
+            {% else %}
+            <section class="subscription-note" aria-live="polite">
+                <p>There are no subscription plans available at this time. Please check back later.</p>
+            </section>
+            {% endif %}
+
+            <aside class="subscription-note">
+                <span class="note-icon" aria-hidden="true">i</span>
+                <p>Prices are shown in Nigerian naira (NGN). Review the plan duration, renewal, cancellation, and refund terms before subscribing. <a href="{{ url_for('root.terms') }}">Read our Terms and Conditions</a>.</p>
+            </aside>
+        </main>
+    </div>
+</body>
+</html>

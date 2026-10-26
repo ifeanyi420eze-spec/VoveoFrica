@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report management | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <main class="admin-page">
+        <nav class="admin-nav" aria-label="Admin navigation">
+            <a class="brand" href="{{ url_for('admin.dashboard') }}">VOVEOFRICA <span>Admin</span></a>
+            <div class="admin-links"><a href="{{ url_for('admin.dashboard') }}">Overview</a><a href="{{ url_for('admin.users') }}">Members</a><a href="{{ url_for('admin.matches') }}">Matches</a><a href="{{ url_for('admin.reports') }}" aria-current="page">Reports</a></div>
+        </nav>
+        <header class="page-heading">
+            <div><p class="eyebrow">Safety and trust</p><h1>Report management</h1><p>Review community reports with care and consistency.</p></div>
+            <a class="btn btn-secondary" href="{{ url_for('admin.dashboard') }}">Back to overview</a>
+        </header>
+        <section class="table-panel" aria-label="Community reports">
+            <table>
+                <thead><tr><th scope="col">Report</th><th scope="col">Category</th><th scope="col">Details</th><th scope="col">Submitted</th><th scope="col">Status</th></tr></thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td>#{{ report.id }}</td>
+                        <td>{{ report.reason }}</td>
+                        <td>{{ report.details }}</td>
+                        <td>{{ report.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td><span class="status {% if report.is_reviewed %}online{% else %}pending{% endif %}">{{ "Reviewed" if report.is_reviewed else "Needs review" }}</span></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="empty-state">There are no reports to review. Thank you for keeping the community safe.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Matches | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/matches.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
+                <li><a href="{{ url_for('user.matches') }}" class="active" aria-current="page">Matches</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+            </ul>
+            <a href="{{ url_for('user.discover') }}" class="btn btn-primary small">Discover people</a>
+        </nav>
+
+        <main class="matches-page">
+            <section class="page-header">
+                <div>
+                    <p class="eyebrow">Your connections</p>
+                    <h1>People who matched with you</h1>
+                </div>
+            </section>
+
+            {% if matches %}
+            <div class="matches-grid">
+                {% for match in matches %}
+                    {% set other_user = match.second_user if match.first_user_id == current_user.id else match.first_user %}
+                    <article class="match-card">
+                        <div class="match-cover rose-bg" aria-hidden="true"></div>
+                        <div class="match-body">
+                            <div class="match-topline">
+                                <h3>{{ other_user.username }}</h3>
+                            </div>
+                            <p>{{ other_user.bio or "You matched. Start a conversation and get to know each other." }}</p>
+                            <div class="match-actions">
+                                <a href="{{ url_for('user.realtime_chat', other_user_id=other_user.id) }}" class="btn btn-primary small">Message</a>
+                                <a href="{{ url_for('user.report_user', reported_user_id=other_user.id) }}" class="btn btn-secondary small">Report</a>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <section class="empty-matches">
+                <h2>No matches yet</h2>
+                <p>When someone likes you back, your match will appear here and you can start a private conversation.</p>
+                <a href="{{ url_for('user.discover') }}" class="btn btn-primary">Discover people</a>
+            </section>
+            {% endif %}
+        </main>
+    </div>
+</body>
+</html>

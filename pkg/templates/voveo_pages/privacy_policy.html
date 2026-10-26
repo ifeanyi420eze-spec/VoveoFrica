@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8f8f8">
+    <meta name="description" content="Learn what information VOVEOFRICA handles and how to contact us about privacy.">
+    <title>Privacy notice | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/informational.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('root.about') }}">About</a></li>
+                <li><a href="{{ url_for('root.support') }}">Support</a></li>
+                <li><a href="{{ url_for('root.terms') }}">Terms</a></li>
+                <li><a href="{{ url_for('root.privacy_policy') }}" class="active" aria-current="page">Privacy</a></li>
+            </ul>
+            <a href="{{ url_for('root.contact') }}" class="btn btn-primary small">Contact us</a>
+        </nav>
+
+        <main class="info-page">
+            <header class="info-hero">
+                <p class="eyebrow">Your information matters</p>
+                <h1>Privacy notice</h1>
+                <p>A plain-language starting point for understanding information handled by the current VOVEOFRICA application.</p>
+            </header>
+
+            <aside class="info-card" aria-label="Draft privacy notice">
+                <strong>Draft for review</strong>
+                <p>This notice is not a substitute for a complete, legally reviewed privacy policy. Confirm the controller's legal identity, retention periods, service providers, and data-subject request process before publication.</p>
+            </aside>
+
+            <section class="info-card" aria-labelledby="information-title">
+                <h2 id="information-title">Information used by the application</h2>
+                <p>When you register, the application stores the account details requested by its form, including your name, username, email address, phone number, location, and a password hash. Profiles, likes, matches, reports, notifications, subscriptions, and chat messages are stored when you use those features.</p>
+                <p>Do not send passwords, verification codes, payment-card numbers, or other credentials in chat or support messages.</p>
+            </section>
+
+            <section class="info-grid" aria-label="Privacy information">
+                <article class="info-panel">
+                    <h2>Why it is used</h2>
+                    <p>Account and profile information supports sign-in and the app's discovery and matching features. Message and report information supports the features you choose to use.</p>
+                </article>
+                <article class="info-panel">
+                    <h2>Account security</h2>
+                    <p>Passwords are stored as password hashes rather than readable passwords. Use a unique password and keep your sign-in details private.</p>
+                </article>
+                <article class="info-panel">
+                    <h2>Questions or requests</h2>
+                    <p>Contact us to ask about your information or request help with your account. The response process and retention periods should be confirmed before this notice is finalized.</p>
+                </article>
+            </section>
+
+            <div class="info-links">
+                <a href="{{ url_for('root.contact') }}" class="btn btn-primary">Contact us</a>
+                <a href="{{ url_for('root.terms') }}" class="btn btn-secondary">Read the terms</a>
+            </div>
+        </main>
+
+        <footer class="info-footer" aria-label="More information">
+            <a href="{{ url_for('root.about') }}">About us</a>
+            <a href="{{ url_for('root.support') }}">Customer care</a>
+            <a href="{{ url_for('root.contact') }}">Contact us</a>
+            <a href="{{ url_for('root.terms') }}">Terms and conditions</a>
+            <a href="{{ url_for('root.cookie_policy') }}">Cookie policy</a>
+        </footer>
+    </div>
+</body>
+</html>
