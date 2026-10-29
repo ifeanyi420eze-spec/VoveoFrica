@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Something went wrong | VOVEOFRICA</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/theme.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/500.css') }}"
+    />
+  </head>
+  <body>
+    <main class="error-page">
+      <section class="error-card">
+        <div class="error-art" aria-hidden="true">
+          <span class="error-heart">♡</span>
+          <span class="error-spark error-spark-one">✦</span>
+          <span class="error-spark error-spark-two">✧</span>
+        </div>
+        <div class="error-content">
+          <p class="error-eyebrow">A little pause in the connection</p>
+          <p class="error-code">500</p>
+          <h1>Something went wrong</h1>
+          <p class="error-message">
+            We could not complete your request right now. Please try again in a
+            moment, or get in touch if the problem continues.
+          </p>
+          <nav class="error-actions" aria-label="Error page links">
+            <a
+              class="error-button error-button-primary"
+              href="{{ url_for('root.home') }}"
+            >
+              Try again
+            </a>
+            <a
+              class="error-button error-button-secondary"
+              href="{{ url_for('root.contact') }}"
+            >
+              Contact support
+            </a>
+          </nav>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

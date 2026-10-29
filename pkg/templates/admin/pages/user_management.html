@@ -14,12 +14,12 @@
             <div class="admin-links"><a href="{{ url_for('admin.dashboard') }}">Overview</a><a href="{{ url_for('admin.users') }}" aria-current="page">Members</a><a href="{{ url_for('admin.matches') }}">Matches</a><a href="{{ url_for('admin.reports') }}">Reports</a></div>
         </nav>
         <header class="page-heading">
-            <div><p class="eyebrow">Community directory</p><h1>Member management</h1><p>Review and manage community accounts.</p></div>
+            <div><p class="eyebrow">Community directory</p><h1>Member management</h1><p>Review and manage community accounts. Complete the private support review before approving a verification request; never request identity documents in chat.</p></div>
             <a class="btn btn-secondary" href="{{ url_for('admin.dashboard') }}">Back to overview</a>
         </header>
         <section class="table-panel" aria-label="Member list">
             <table>
-                <thead><tr><th scope="col">Member</th><th scope="col">Email</th><th scope="col">Joined</th><th scope="col">Account</th></tr></thead>
+                <thead><tr><th scope="col">Member</th><th scope="col">Email</th><th scope="col">Joined</th><th scope="col">Account</th><th scope="col">Verification</th><th scope="col">Review</th></tr></thead>
                 <tbody>
                     {% for user in users %}
                     <tr>
@@ -27,13 +27,30 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
                         <td><span class="status online">Active</span></td>
+                        <td>{{ user.verification_status|title }}{% if user.verification_requested_at %}<br><small>{{ user.verification_requested_at.strftime("%Y-%m-%d %H:%M") }}</small>{% endif %}</td>
+                        <td>
+                            {% if user.verification_status == "pending" %}
+                            <form action="{{ url_for('admin.review_verification', user_id=user.id) }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button class="btn btn-primary small" type="submit" name="decision" value="verified">Approve</button>
+                                <button class="btn btn-secondary small" type="submit" name="decision" value="rejected">Decline</button>
+                            </form>
+                            {% else %}—{% endif %}
+                        </td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="4" class="empty-state">No members to display yet.</td></tr>
+                    <tr><td colspan="6" class="empty-state">No members to display yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
         </section>
+        {% if pagination.pages > 1 %}
+        <nav aria-label="Member pages">
+            {% if pagination.has_prev %}<a href="{{ url_for('admin.users', page=pagination.prev_num) }}">Previous</a>{% endif %}
+            <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
+            {% if pagination.has_next %}<a href="{{ url_for('admin.users', page=pagination.next_num) }}">Next</a>{% endif %}
+        </nav>
+        {% endif %}
     </main>
 </body>
 </html>

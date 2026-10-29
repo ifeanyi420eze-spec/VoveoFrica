@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f8f8">
+    <meta name="theme-color" content="#1efc1e">
     <title>Your dashboard | VOVEOFRICA</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <style>
@@ -35,6 +35,7 @@
                 <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
                 <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
                 <li><a href="{{ url_for('user.profile') }}">My profile</a></li>
+                <li><a href="{{ url_for('user.notifications') }}">Activity{% if unread_notification_count %} <span class="notification-count">{{ unread_notification_count }}</span>{% endif %}</a></li>
             </ul>
             <a href="{{ url_for('user.profile') }}" class="btn btn-secondary small">View profile</a>
         </nav>
@@ -52,18 +53,36 @@
                 <article class="stat-card"><span>Conversations</span><strong>{{ conversation_count }}</strong></article>
                 <article class="stat-card"><span>Profile completeness</span><strong>{{ profile_completion }}%</strong></article>
             </section>
+            <section class="dashboard-panel membership-panel">
+                <div>
+                    <p class="eyebrow">{{ "Premium member" if is_premium else "Free community plan" }}</p>
+                    <h2>{{ "Your Premium pass is active" if premium_subscription else "Meet people for free, upgrade when you want" }}</h2>
+                    <p>{{ premium_subscription.ends_at.strftime("Premium access until %b %d, %Y") if premium_subscription else "Free includes up to 10 likes a day, discovery, matches, messaging, and all safety tools." }}</p>
+                    <p>Likes today: {{ daily_likes_used }} of {{ daily_like_limit }}.</p>
+                    {% if active_boost %}<p>Your profile is boosted until {{ active_boost.ends_at.strftime("%b %d, %Y at %H:%M") }}.</p>{% endif %}
+                </div>
+                <div class="membership-actions">
+                    <a class="btn btn-secondary" href="{{ url_for('user.subscription_account') }}">Manage purchases</a>
+                    {% if not is_premium %}<a class="btn btn-primary" href="{{ url_for('root.subscription') }}">Explore Premium</a>{% endif %}
+                    {% if not active_boost %}<a class="btn btn-secondary" href="{{ url_for('root.subscription') }}">Boost profile</a>{% endif %}
+                </div>
+            </section>
             <div class="dashboard-grid">
                 <section class="dashboard-panel">
                     <h2>Recent activity</h2>
-                    <div class="activity-item"><p><strong>A new connection is waiting.</strong><br><span>See who you matched with today.</span></p><a href="{{ url_for('user.matches') }}" aria-label="View new matches">View</a></div>
-                    <div class="activity-item"><p><strong>Your inbox is ready.</strong><br><span>Pick up where the conversation left off.</span></p><a href="{{ url_for('user.chats') }}" aria-label="Open messages">Open</a></div>
+                    {% for notification in recent_notifications %}
+                    <div class="activity-item"><p><strong>{{ notification.text }}</strong><br><span>{{ notification.created_at.strftime("%b %d, %H:%M") }}</span></p><a href="{{ notification.link_url or url_for('user.notifications') }}" aria-label="Open activity">Open</a></div>
+                    {% else %}
+                    <div class="activity-item"><p><strong>Your next connection could start today.</strong><br><span>Explore profiles and find someone to say hello to.</span></p><a href="{{ url_for('user.explore') }}" aria-label="Explore profiles">Explore</a></div>
+                    {% endfor %}
                     <div class="activity-item"><p><strong>Make your profile more you.</strong><br><span>A few extra details can make a great introduction.</span></p><a href="{{ url_for('user.profile') }}" aria-label="Edit profile">Edit</a></div>
                 </section>
                 <aside class="dashboard-panel">
                     <h2>Quick links</h2>
                     <div class="quick-links">
                         <a href="{{ url_for('user.discover') }}">Explore new connections <span aria-hidden="true">→</span></a>
-                        <a href="{{ url_for('user.filter_users') }}">Adjust your preferences <span aria-hidden="true">→</span></a>
+                        <a href="{{ url_for('user.filter_users') }}">Discovery preferences {% if not is_premium %}(Premium){% endif %} <span aria-hidden="true">→</span></a>
+                        <a href="{{ url_for('user.notifications') }}">Your activity{% if unread_notification_count %} ({{ unread_notification_count }} unread){% endif %} <span aria-hidden="true">→</span></a>
                         <a href="{{ url_for('root.support') }}">Visit safety and support <span aria-hidden="true">→</span></a>
                     </div>
                 </aside>

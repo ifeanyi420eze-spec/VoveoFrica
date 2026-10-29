@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1efc1e">
+    <title>Your activity | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.explore') }}">Explore</a></li>
+                <li><a href="{{ url_for('user.connections') }}">Connections</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('user.notifications') }}" class="active" aria-current="page">Activity</a></li>
+            </ul>
+            <a href="{{ url_for('user.profile') }}" class="btn btn-secondary small">My profile</a>
+        </nav>
+
+        <main class="notifications-page">
+            <header class="notifications-heading">
+                <div>
+                    <p class="eyebrow">A little love from your community</p>
+                    <h1>Your activity</h1>
+                    <p>Likes, matches, and new messages all in one place.</p>
+                </div>
+                {% if notifications %}
+                <form action="{{ url_for('user.mark_all_notifications_read') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-secondary" type="submit">Mark all as read</button>
+                </form>
+                {% endif %}
+            </header>
+
+            {% if notifications %}
+            <ol class="notification-list">
+                {% for notification in notifications %}
+                <li class="notification-card {% if not notification.is_read %}unread{% endif %}">
+                    <span class="notification-icon" aria-hidden="true">
+                        {% if notification.category == "match" %}♥{% elif notification.category == "like" %}♡{% elif notification.category == "message" %}✉{% else %}✦{% endif %}
+                    </span>
+                    <div class="notification-copy">
+                        <p>{{ notification.text }}</p>
+                        <time datetime="{{ notification.created_at.isoformat() }}">{{ notification.created_at.strftime("%b %d, %Y · %H:%M") }}</time>
+                    </div>
+                    {% if notification.is_read %}<span class="notification-read-label">Read</span>{% endif %}
+                    {% if notification.link_url %}
+                    <form action="{{ url_for('user.mark_notification_read', notification_id=notification.id) }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="notification-action" type="submit">Open</button>
+                    </form>
+                    {% elif not notification.is_read %}
+                    <form action="{{ url_for('user.mark_notification_read', notification_id=notification.id) }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="notification-action" type="submit">Mark read</button>
+                    </form>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <section class="notifications-empty">
+                <span aria-hidden="true">✦</span>
+                <h2>It is quiet for now</h2>
+                <p>When someone likes your profile, you match, or a new message arrives, you will find it here.</p>
+                <a href="{{ url_for('user.explore') }}" class="btn btn-primary">Explore profiles</a>
+            </section>
+            {% endif %}
+        </main>
+    </div>
+</body>
+</html>

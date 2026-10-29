@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1efc1e">
+    <title>My plan and purchases | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/subscription_account.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.explore') }}">Explore</a></li>
+                <li><a href="{{ url_for('user.likes') }}">Likes</a></li>
+                <li><a href="{{ url_for('root.subscription') }}">Plans</a></li>
+            </ul>
+            <a href="{{ url_for('user.dashboard') }}" class="btn btn-secondary small">Dashboard</a>
+        </nav>
+
+        <main class="subscription-account">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                <p class="billing-flash billing-flash-{{ category }}" role="status">{{ message }}</p>
+                {% endfor %}
+            {% endwith %}
+            <header class="account-heading">
+                <p class="eyebrow">Your billing, clearly</p>
+                <h1>Plan and purchases</h1>
+                <p>Every purchase is a one-time payment. Your access ends on the date shown and never renews automatically.</p>
+            </header>
+
+            <section class="account-cards" aria-label="Current benefits">
+                <article class="account-card">
+                    <p class="eyebrow">Membership</p>
+                    {% if premium_subscription %}
+                    <h2>Premium active</h2>
+                    <p>{{ premium_subscription.plan_name }} pass · access until {{ premium_subscription.ends_at.strftime("%b %d, %Y") }}.</p>
+                    <p>Up to 50 likes a day, saved discovery preferences, and access to see received likes.</p>
+                    {% else %}
+                    <h2>Free community plan</h2>
+                    <p>Profile, discovery, matches, messaging, and safety tools, plus up to 10 likes each day.</p>
+                    <a class="btn btn-primary" href="{{ url_for('root.subscription') }}">Explore Premium passes</a>
+                    {% endif %}
+                </article>
+                <article class="account-card">
+                    <p class="eyebrow">Profile Boost</p>
+                    {% if active_boost %}
+                    <h2>Boost active</h2>
+                    <p>Your profile is prioritized in discovery until {{ active_boost.ends_at.strftime("%b %d, %Y at %H:%M UTC") }}.</p>
+                    {% else %}
+                    <h2>Not boosted</h2>
+                    <p>Optional one-time Boosts prioritize your profile for 24 hours. Results are not guaranteed.</p>
+                    <a class="btn btn-secondary" href="{{ url_for('root.subscription') }}">View Boost</a>
+                    {% endif %}
+                </article>
+            </section>
+
+            <section class="billing-history" aria-labelledby="history-title">
+                <div class="history-heading"><div><p class="eyebrow">Receipts and status</p><h2 id="history-title">Purchase history</h2></div></div>
+                {% if subscription_history %}
+                <div class="history-table-wrap">
+                    <table>
+                        <thead><tr><th scope="col">Purchase</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col">Access period</th><th scope="col">Reference</th></tr></thead>
+                        <tbody>
+                            {% for purchase in subscription_history %}
+                            <tr>
+                                <td>{{ purchase.plan_name }}<br><small>{{ purchase.created_at.strftime("%b %d, %Y") }}</small></td>
+                                <td>₦{{ "{:,.0f}".format(purchase.amount_ngn) }}</td>
+                                <td><span class="purchase-status purchase-status-{{ purchase.status }}">{% if purchase.status == "active" and purchase.ends_at and purchase.ends_at <= now_utc %}Expired{% elif purchase.status == "active" and purchase.starts_at and purchase.starts_at > now_utc %}Scheduled{% elif purchase.status == "active" %}Paid{% else %}{{ purchase.status|title }}{% endif %}</span></td>
+                                <td>{% if purchase.starts_at and purchase.ends_at %}{{ purchase.starts_at.strftime("%b %d, %Y") }} – {{ purchase.ends_at.strftime("%b %d, %Y") }}{% elif purchase.status == "pending" %}Awaiting payment confirmation{% else %}Not activated{% endif %}</td>
+                                <td><code>{{ purchase.payment_reference or "—" }}</code></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="history-empty">Your one-time purchases and payment references will appear here.</p>
+                {% endif %}
+            </section>
+
+            <p class="billing-help">Need help with a charge? Contact <a href="{{ url_for('root.support') }}">support</a> and include the Paystack reference shown above. Never send your card details or secret keys in a message.</p>
+        </main>
+    </div>
+</body>
+</html>

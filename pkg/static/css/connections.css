@@ -1,0 +1,224 @@
+.connections-page {
+  padding: clamp(30px, 5vw, 58px) 0 24px;
+}
+
+.connections-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.connections-heading h1,
+.explore-heading h1 {
+  max-width: 700px;
+  margin: 0;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  letter-spacing: -0.06em;
+  line-height: 1.04;
+}
+
+.heading-copy {
+  max-width: 570px;
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.connections-heading > .btn {
+  flex: 0 0 auto;
+  gap: 9px;
+}
+
+.connections-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.connection-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: var(--card-background);
+  box-shadow: 0 18px 48px rgba(46, 35, 52, 0.08);
+}
+
+.connection-art {
+  position: relative;
+  display: grid;
+  min-height: 210px;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,.7) 0 3px, transparent 4px),
+    radial-gradient(circle at 78% 72%, rgba(255,255,255,.55) 0 5px, transparent 6px),
+    linear-gradient(140deg, #ef64ef 0%, #f5a1dd 45%, #fcf300 100%);
+}
+
+.connection-card:nth-child(3n + 2) .connection-art {
+  background: linear-gradient(140deg, #1efc1e 0%, #a8f3a2 46%, #ef64ef 100%);
+}
+
+.connection-card:nth-child(3n) .connection-art {
+  background: linear-gradient(140deg, #fcf300 0%, #ffb79b 48%, #ef64ef 100%);
+}
+
+.connection-avatar {
+  display: grid;
+  width: 98px;
+  height: 98px;
+  place-items: center;
+  border: 5px solid rgba(255, 255, 255, 0.88);
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.68);
+  color: #52234d;
+  font-size: 2rem;
+  font-weight: 800;
+  box-shadow: 0 16px 35px rgba(65, 24, 72, 0.16);
+}
+
+.connection-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.match-spark {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  color: #fff;
+  font-size: 2rem;
+  text-shadow: 0 3px 12px rgba(68, 34, 65, 0.25);
+}
+
+.connection-content {
+  padding: 21px 21px 23px;
+}
+
+.connection-label {
+  margin: 0 0 12px;
+  color: #a83191;
+  font-size: .79rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.connection-content h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: -.03em;
+}
+
+.connection-location {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.connection-bio {
+  min-height: 72px;
+  margin: 15px 0 18px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.connection-prompt {
+  margin-bottom: 18px;
+}
+
+.connection-prompt p {
+  margin: 5px 0 0;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.connection-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.connection-actions > .btn {
+  grid-column: 1 / -1;
+}
+
+.report-link {
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.connection-actions form { margin: 0; }
+.connection-actions form .report-link { width: 100%; text-align: left; }
+
+.connections-empty {
+  max-width: 680px;
+  margin: 54px auto 0;
+  padding: clamp(30px, 6vw, 58px);
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(239, 100, 239, .13), transparent 38%),
+    radial-gradient(ellipse at 0% 100%, rgba(30, 252, 30, .14), transparent 42%),
+    var(--card-background);
+  box-shadow: 0 20px 55px rgba(46, 35, 52, .08);
+  text-align: center;
+}
+
+.empty-heart {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 23px;
+  place-items: center;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(239, 100, 239, .19), rgba(30, 252, 30, .22));
+  color: #d945d4;
+  font-size: 2.8rem;
+}
+
+.connections-empty h2 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.2rem);
+}
+
+.connections-empty > p:not(.eyebrow) {
+  max-width: 470px;
+  margin: 12px auto 22px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .connections-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .connections-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .connections-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .connection-art {
+    min-height: 190px;
+  }
+}

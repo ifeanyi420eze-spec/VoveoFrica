@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1efc1e">
+    <title>Explore | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/explore.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.explore') }}" class="active" aria-current="page">Explore</a></li>
+                <li><a href="{{ url_for('user.connections') }}">Connections</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('user.likes') }}">Likes</a></li>
+                <li><a href="{{ url_for('user.notifications') }}">Activity{% if unread_notification_count %} <span class="notification-count">{{ unread_notification_count }}</span>{% endif %}</a></li>
+            </ul>
+            <a href="{{ url_for('user.profile') }}" class="btn btn-secondary small">My profile</a>
+        </nav>
+
+        <main class="explore-page">
+            <header class="explore-heading">
+                <div>
+                    <p class="eyebrow">A little closer to your kind of person</p>
+                    <h1>Real connections start with hello.</h1>
+                    <p>Meet people in your community and find something meaningful, one conversation at a time.</p>
+                </div>
+                <div class="heading-decoration" aria-hidden="true"><span>♡</span><i>✦</i></div>
+            </header>
+
+            <form class="explore-filters" action="{{ url_for('user.explore') }}" method="get">
+                <label>
+                    <span>Country</span>
+                    <input type="search" name="country" value="{{ country }}" placeholder="Any country" autocomplete="country-name">
+                </label>
+                <label>
+                    <span>City</span>
+                    <input type="search" name="city" value="{{ city }}" placeholder="Any city" autocomplete="address-level2">
+                </label>
+                <label>
+                    <span>Relationship goal</span>
+                    <select name="goal">
+                        <option value="">Any goal</option>
+                        {% for option in ["Long-term", "Marriage", "Casual dating", "Friendship"] %}
+                        <option value="{{ option }}" {% if goal == option %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span>Interests</span>
+                    <input type="search" name="interests" value="{{ interests }}" placeholder="Music, travel">
+                </label>
+                <button class="btn btn-primary" type="submit">Find people <span aria-hidden="true">→</span></button>
+                {% if country or city or goal or interests %}
+                <a class="clear-filters" href="{{ url_for('user.explore', country='', city='', goal='', interests='') }}">Clear search filters</a>
+                {% endif %}
+            </form>
+            {% if not is_premium %}
+            <p class="premium-hint">Likes today: {{ daily_likes_used }} of {{ daily_like_limit }}. {% if not is_premium %}Temporary filters are available; <a href="{{ url_for('root.subscription') }}">Premium saves your filters and includes up to 50 daily likes.</a>{% endif %}</p>
+            {% endif %}
+
+            <section class="explore-results" aria-labelledby="results-title">
+                <div class="results-heading">
+                    <div>
+                        <p class="eyebrow">Made for meaningful moments</p>
+                        <h2 id="results-title">People to meet</h2>
+                    </div>
+                    {% if users %}<span class="results-count">{{ users|length }} {{ "person" if users|length == 1 else "people" }}</span>{% endif %}
+                </div>
+
+                {% if users %}
+                <div class="people-grid">
+                    {% for candidate in users %}
+                    <article class="person-card">
+                        <div class="person-art person-art-{{ loop.index0 % 4 }}" aria-hidden="true">
+                            {% if candidate.profile_photo %}
+                            <img class="person-photo" src="{{ url_for('user.profile_photo', filename=candidate.profile_photo) }}" alt="">
+                            {% else %}
+                            <span class="person-initial">{{ candidate.first_name[:1]|upper }}</span>
+                            {% endif %}
+                            <span class="person-spark">✦</span>
+                        </div>
+                        <div class="person-content">
+                            <p class="person-location"><span aria-hidden="true">⌖</span> {{ candidate.city }}, {{ candidate.country }}</p>
+                            <h3>{{ candidate.first_name }} {{ candidate.last_name }}</h3>
+                            {% if candidate.verification_status == "verified" %}<span class="verified-badge">✓ Verified</span>{% endif %}
+                            {% if candidate.relationship_goal %}<p class="person-goal">{{ candidate.relationship_goal }}</p>{% endif %}
+                            <p class="person-bio">{{ candidate.bio or "This member is ready to meet someone new. Send a like to start a connection." }}</p>
+                            {% if candidate.interests %}
+                            <div class="person-interests" aria-label="Interests">
+                                {% for interest in candidate.interests.split(",") %}
+                                    {% if interest.strip() %}<span>{{ interest.strip() }}</span>{% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if candidate.profile_prompt and candidate.profile_answer %}
+                            <blockquote class="person-prompt">
+                                <span>{{ candidate.profile_prompt }}</span>
+                                <p>{{ candidate.profile_answer }}</p>
+                            </blockquote>
+                            {% endif %}
+                            <div class="person-actions">
+                                <form action="{{ url_for('user.like_user', liked_id=candidate.id) }}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="btn btn-primary like-button" type="submit"><span aria-hidden="true">♥</span> Send a like</button>
+                                </form>
+                                <a href="{{ url_for('user.report_user', reported_user_id=candidate.id) }}">Report</a>
+                                <form action="{{ url_for('user.block_user', blocked_user_id=candidate.id) }}" method="post" onsubmit="return confirm('Block this member? They will no longer be able to find or message you.');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit">Block</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="explore-empty">
+                    <span class="empty-symbol" aria-hidden="true">✦</span>
+                    <h3>No new profiles just yet</h3>
+                    <p>{% if country or city or goal or interests %}Try changing your filters, or clear them to see more people.{% else %}You have seen everyone for now. Check back soon as our community grows.{% endif %}</p>
+                    {% if country or city or goal or interests %}
+                    <a href="{{ url_for('user.explore', country='', city='', goal='', interests='') }}" class="btn btn-secondary">Show everyone</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>

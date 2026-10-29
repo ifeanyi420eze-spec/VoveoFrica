@@ -1,0 +1,124 @@
+.verification-layout {
+  display: grid;
+  min-height: min(78vh, 760px);
+  place-items: center;
+  padding: 28px 0;
+}
+
+.verification-card {
+  width: min(100%, 500px);
+  padding: clamp(24px, 5vw, 42px);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.verification-icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 20px;
+  place-items: center;
+  border-radius: 20px;
+  background: rgba(239, 100, 239, 0.14);
+  color: #8d2786;
+  font-size: 1.6rem;
+}
+
+.verification-card .eyebrow {
+  margin: 0 0 8px;
+  color: #716900;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.verification-card h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  letter-spacing: -0.04em;
+}
+
+.verification-copy,
+.verification-foot {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.verification-copy {
+  margin: 12px 0 22px;
+}
+
+.verification-copy strong {
+  color: var(--text);
+}
+
+.verification-form {
+  display: grid;
+  gap: 12px;
+  text-align: left;
+}
+
+.verification-form label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.verification-form input {
+  min-height: 58px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.35em;
+  text-align: center;
+}
+
+.verification-form button {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.verification-message,
+.verification-expired {
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: rgba(30, 252, 30, 0.12);
+  color: #285d2a;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.verification-expired {
+  background: #fff5dc;
+  color: #6a4e00;
+}
+
+.resend-form {
+  margin-top: 14px;
+}
+
+.resend-button {
+  min-height: 42px;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: #76256e;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resend-button:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.verification-foot {
+  margin: 20px 0 0;
+  font-size: 0.82rem;
+}

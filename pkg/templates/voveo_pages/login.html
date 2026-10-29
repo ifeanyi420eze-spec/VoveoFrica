@@ -32,13 +32,14 @@
 
         <div class="login-card">
             <h1>Login to Your Account</h1>
-            <p class="login-description">Enter your username or email and password to continue.</p>
+            <p class="login-description">Enter your username or email and password. We’ll email you a one-time code to finish signing in.</p>
 
             {% if error %}<p role="alert">{{ error }}</p>{% endif %}
             <form action="{{ url_for('user.login') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="form-group">
                     <label for="identity">Username/Email:</label>
-                    <input type="text" name="identity" id="identity" placeholder="username or password"
+                    <input type="text" name="identity" id="identity" placeholder="username or email"
                         autocomplete="username" required>
                 </div>
 

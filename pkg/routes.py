@@ -1,12 +1,31 @@
 """Public-page routes for the VOVEOFRICA website."""
 
-from flask import Blueprint, redirect, render_template, url_for
+from flask import (
+    Blueprint,
+    current_app,
+    redirect,
+    render_template,
+    send_from_directory,
+    session,
+    url_for,
+)
 
 from pkg.models import Match, SubscriptionPlan, User
+from pkg.payments import paystack_configuration_is_ready
 
 
 # Public templates live in the voveo_pages directory under Flask's template root.
 root_routes = Blueprint("root", __name__)
+
+
+@root_routes.route("/favicon.ico")
+def favicon():
+    """Serve the existing brand image for browsers requesting a favicon."""
+    return send_from_directory(
+        current_app.static_folder,
+        "images/logo.png",
+        mimetype="image/png",
+    )
 
 
 @root_routes.route("/")
@@ -37,7 +56,39 @@ def subscription():
     plans = SubscriptionPlan.query.filter_by(is_active=True).order_by(
         SubscriptionPlan.duration_days
     ).all()
-    return render_template("voveo_pages/subscription.html", plans=plans)
+    premium_plans = [plan for plan in plans if plan.plan_type == "premium"]
+    boost_plans = [plan for plan in plans if plan.plan_type == "boost"]
+    monthly_equivalents = {}
+    monthly_plan = next(
+        (plan for plan in premium_plans if plan.name.casefold() == "monthly"),
+        None,
+    )
+    for plan in premium_plans:
+        months = (
+            max(1, round(plan.duration_days / monthly_plan.duration_days))
+            if monthly_plan and monthly_plan.duration_days > 0
+            else 0
+        )
+        if months:
+            baseline = monthly_plan.amount_ngn * months
+            monthly_equivalents[plan.id] = {
+                "amount": plan.amount_ngn / months,
+                "months": months,
+                "savings_percent": max(
+                    0,
+                    round((1 - plan.amount_ngn / baseline) * 100)
+                    if baseline
+                    else 0,
+                ),
+            }
+    return render_template(
+        "voveo_pages/subscription.html",
+        plans=premium_plans,
+        boost_plans=boost_plans,
+        monthly_equivalents=monthly_equivalents,
+        logged_in=bool(session.get("user_id")),
+        checkout_available=paystack_configuration_is_ready(current_app.config),
+    )
 
 
 @root_routes.route("/support")

@@ -18,6 +18,7 @@
                 <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
                 <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
                 <li><a href="{{ url_for('user.chats') }}" class="active" aria-current="page">Chats</a></li>
+                <li><a href="{{ url_for('user.notifications') }}">Activity{% if unread_notification_count %} <span class="notification-count">{{ unread_notification_count }}</span>{% endif %}</a></li>
             </ul>
             <a href="{{ url_for('user.matches') }}" class="btn btn-primary small">Your matches</a>
         </nav>
@@ -29,11 +30,15 @@
                 </header>
 
                 {% if chat_list %}
-                    {% for other_user, latest_message in chat_list %}
+                    {% for other_user, latest_message, unread_count in chat_list %}
                     <a class="chat-item" href="{{ url_for('user.realtime_chat', other_user_id=other_user.id) }}">
+                        {% if other_user.profile_photo %}
+                        <img class="avatar chat-avatar-photo" src="{{ url_for('user.profile_photo', filename=other_user.profile_photo) }}" alt="">
+                        {% else %}
                         <span class="avatar rose" aria-hidden="true">{{ other_user.username[:1]|upper }}</span>
+                        {% endif %}
                         <span class="chat-copy">
-                            <span class="name-line"><strong>{{ other_user.username }}</strong></span>
+                            <span class="name-line"><strong>{{ other_user.username }}</strong>{% if unread_count %}<span class="unread-badge" aria-label="{{ unread_count }} unread messages">{{ unread_count }}</span>{% endif %}</span>
                             <span class="chat-preview-text">
                                 {% if latest_message %}
                                     {% if latest_message.sender_id == other_user.id %}{{ other_user.username }}: {% else %}You: {% endif %}{{ latest_message.text }}
@@ -41,6 +46,7 @@
                                     You matched. Start a conversation.
                                 {% endif %}
                             </span>
+                            {% if latest_message %}<time class="chat-time" datetime="{{ latest_message.sent_at.isoformat() }}">{{ latest_message.sent_at.strftime("%b %d, %H:%M") }}</time>{% endif %}
                         </span>
                     </a>
                     {% endfor %}

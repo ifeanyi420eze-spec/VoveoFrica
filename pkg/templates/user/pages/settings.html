@@ -36,6 +36,7 @@
             <h1>Profile settings</h1>
             <p>Update the short introduction shown on your profile. Keep it respectful and avoid sharing sensitive details.</p>
             <form class="settings-form" action="{{ url_for('user.settings') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <label for="bio">Your bio</label>
                 <textarea id="bio" name="bio" maxlength="2000">{{ user.bio or "" }}</textarea>
                 <button class="btn btn-primary" type="submit">Save changes</button>

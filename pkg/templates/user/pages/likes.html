@@ -29,6 +29,7 @@
                 <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
                 <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
                 <li><a href="{{ url_for('user.likes') }}" class="active" aria-current="page">Likes</a></li>
+                <li><a href="{{ url_for('root.subscription') }}">Plans</a></li>
             </ul>
             <a href="{{ url_for('user.profile') }}" class="btn btn-secondary small">My profile</a>
         </nav>
@@ -37,11 +38,18 @@
             <header class="page-heading">
                 <p class="eyebrow">Your activity</p>
                 <h1>Likes</h1>
-                <p>See people who liked you and the profiles you have liked.</p>
+                <p>See people who liked you and the profiles you have liked. Free includes 10 likes a day; Premium includes up to 50.</p>
             </header>
             <div class="likes-grid">
                 <section class="likes-panel" aria-labelledby="received-title">
                     <h2 id="received-title">People who liked you</h2>
+                    {% if not is_premium %}
+                    <div class="likes-upgrade">
+                        <strong>{{ likes_received_count }} {% if likes_received_count == 1 %}person has{% else %}people have{% endif %} liked you</strong>
+                        <p>See who they are with Premium. Mutual matches remain available to everyone.</p>
+                        <a class="btn btn-primary small" href="{{ url_for('root.subscription') }}">See Premium plans</a>
+                    </div>
+                    {% else %}
                     {% if likes_received %}
                     <ul class="likes-list">
                         {% for like in likes_received %}
@@ -50,6 +58,7 @@
                     </ul>
                     {% else %}
                     <p class="empty-state">No likes received yet. Keep your profile up to date and check back soon.</p>
+                    {% endif %}
                     {% endif %}
                 </section>
                 <section class="likes-panel" aria-labelledby="sent-title">

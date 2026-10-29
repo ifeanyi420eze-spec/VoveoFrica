@@ -205,6 +205,14 @@ img { display: block; max-width: 100%; }
   height: 260px;
   place-items: center;
   background: linear-gradient(160deg, #f4d0db, #da729f, #7659dc);
+  overflow: hidden;
+}
+
+.profile-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
 }
 
 .rose-bg { background: linear-gradient(160deg, #fbd7d8, #f06e98, #a65be0); }
@@ -266,7 +274,27 @@ img { display: block; max-width: 100%; }
   color: var(--muted);
 }
 
+.profile-interests {
+  margin: 14px 0;
+}
+
+.discover-prompt p {
+  margin: 6px 0 0;
+}
+
 @media (max-width: 980px) {
   .discover-layout { grid-template-columns: 1fr; }
   .profile-grid { grid-template-columns: 1fr; }
 }
+
+.premium-hint {
+  margin: -4px 0 18px;
+  padding: 12px 15px;
+  border: 1px solid rgba(239,100,239,.2);
+  border-radius: 14px;
+  background: #fff;
+  color: #415741;
+  font-size: .9rem;
+  line-height: 1.5;
+}
+.premium-hint a { color: #76256e; font-weight: 800; }

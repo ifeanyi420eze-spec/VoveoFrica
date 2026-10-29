@@ -1,0 +1,33 @@
+.verification-page { display: grid; min-height: 65vh; place-items: center; padding: 48px 0; }
+.verification-card {
+  display: grid;
+  justify-items: center;
+  width: min(660px, 100%);
+  padding: clamp(26px, 6vw, 54px);
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(239,100,239,.13), transparent 35%),
+    #fff;
+  box-shadow: 0 24px 60px rgba(21,54,21,.12);
+  text-align: center;
+}
+.verification-art {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 22px;
+  place-items: center;
+  border: 5px solid #fff;
+  border-radius: 26px;
+  background: linear-gradient(140deg, #1efc1e, #fcf300);
+  color: #233d23;
+  font-size: 2rem;
+  font-weight: 900;
+  box-shadow: 0 0 0 1px var(--line), 0 12px 30px rgba(30,252,30,.2);
+}
+.verification-card h1 { margin: 0; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -.05em; }
+.verification-status { max-width: 500px; margin: 14px 0; font-size: 1.05rem; font-weight: 700; line-height: 1.6; }
+.verification-privacy { max-width: 500px; color: var(--muted); line-height: 1.7; }
+.verification-card form { margin: 14px 0; }
+.support-link { margin-top: 12px; color: #76256e; font-weight: 750; }

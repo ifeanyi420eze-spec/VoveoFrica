@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6faf5">
+    <title>Email verification | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/email_verification.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('root.home') }}" class="brand" aria-label="VOVEOFRICA home">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+        </nav>
+        <main class="verification-layout">
+            <section class="verification-card" aria-labelledby="verification-title">
+                <span class="verification-icon" aria-hidden="true">✉</span>
+                <p class="eyebrow">{% if purpose == "registration" %}One last step{% else %}Account security{% endif %}</p>
+                <h1 id="verification-title">
+                    {% if purpose == "registration" %}Verify your email{% else %}Confirm it’s you{% endif %}
+                </h1>
+                <p class="verification-copy">
+                    {% if purpose == "registration" %}
+                    Enter the six-digit code we sent to <strong>{{ masked_email }}</strong> to finish creating your account.
+                    {% else %}
+                    Enter the six-digit sign-in code we sent to <strong>{{ masked_email }}</strong>.
+                    {% endif %}
+                    The code expires in 10 minutes.
+                </p>
+                {% if error %}<p class="verification-message" role="status">{{ error }}</p>{% endif %}
+                {% if expired %}<p class="verification-expired">This code has expired. Request a new one to continue.</p>{% endif %}
+                <form class="verification-form" action="{{ url_for('user.verify_email') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label for="code">6-digit verification code</label>
+                    <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code"
+                        pattern="[0-9]{6}" minlength="6" maxlength="6" placeholder="000000"
+                        aria-label="Six-digit verification code" required>
+                    <button class="btn btn-primary" type="submit">Verify and continue</button>
+                </form>
+                <form class="resend-form" action="{{ url_for('user.resend_email_code') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="resend-button" type="submit"
+                        {% if resend_wait > 0 %}disabled{% endif %}>
+                        {% if resend_wait > 0 %}Request another code in {{ resend_wait }} seconds{% else %}Send a new code{% endif %}
+                    </button>
+                </form>
+                <p class="verification-foot">Can’t find the email? Check your spam folder. For your security, never share this code.</p>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

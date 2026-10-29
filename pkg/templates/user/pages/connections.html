@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1efc1e">
+    <title>Your connections | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/connections.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.explore') }}">Explore</a></li>
+                <li><a href="{{ url_for('user.connections') }}" class="active" aria-current="page">Connections</a></li>
+                <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
+                <li><a href="{{ url_for('user.likes') }}">Likes</a></li>
+                <li><a href="{{ url_for('user.notifications') }}">Activity{% if unread_notification_count %} <span class="notification-count">{{ unread_notification_count }}</span>{% endif %}</a></li>
+            </ul>
+            <a href="{{ url_for('user.profile') }}" class="btn btn-secondary small">My profile</a>
+        </nav>
+
+        <main class="connections-page">
+            <header class="connections-heading">
+                <div>
+                    <p class="eyebrow">Good things start here</p>
+                    <h1>Your connections</h1>
+                    <p class="heading-copy">Every match is a chance to share a story. Say hello and see where it goes.</p>
+                </div>
+                <a href="{{ url_for('user.explore') }}" class="btn btn-primary">Meet someone new <span aria-hidden="true">→</span></a>
+            </header>
+
+            {% if matches %}
+            <section class="connections-grid" aria-label="Your matched connections">
+                {% for match in matches %}
+                    {% set other_user = match.second_user if match.first_user_id == current_user.id else match.first_user %}
+                    <article class="connection-card">
+                        <div class="connection-art" aria-hidden="true">
+                            {% if other_user.profile_photo %}
+                            <img class="connection-photo" src="{{ url_for('user.profile_photo', filename=other_user.profile_photo) }}" alt="">
+                            {% else %}
+                            <span class="connection-avatar">{{ other_user.first_name[:1]|upper }}{{ other_user.last_name[:1]|upper }}</span>
+                            {% endif %}
+                            <span class="match-spark">✦</span>
+                        </div>
+                        <div class="connection-content">
+                            <p class="connection-label"><span aria-hidden="true">♥</span> Matched {{ match.created_at.strftime("%b %d, %Y") }}</p>
+                            <h2>{{ other_user.first_name }} {{ other_user.last_name }}</h2>
+                            {% if other_user.verification_status == "verified" %}<span class="verified-badge">✓ Verified</span>{% endif %}
+                            <p class="connection-location">{{ other_user.city }}, {{ other_user.country }}</p>
+                            <p class="connection-bio">{{ other_user.bio or "A new connection is waiting. Start a conversation and get to know each other." }}</p>
+                            {% if other_user.interests %}
+                            <div class="connection-interests" aria-label="Interests">
+                                {% for interest in other_user.interests.split(",") %}
+                                    {% if interest.strip() %}<span>{{ interest.strip() }}</span>{% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% if other_user.profile_prompt and other_user.profile_answer %}
+                            <blockquote class="connection-prompt">
+                                <span>{{ other_user.profile_prompt }}</span>
+                                <p>{{ other_user.profile_answer }}</p>
+                            </blockquote>
+                            {% endif %}
+                            <div class="connection-actions">
+                                <a href="{{ url_for('user.realtime_chat', other_user_id=other_user.id) }}" class="btn btn-primary">Send a message</a>
+                                <a href="{{ url_for('user.report_user', reported_user_id=other_user.id) }}" class="report-link">Report</a>
+                                <form action="{{ url_for('user.unmatch_user', other_user_id=other_user.id) }}" method="post" onsubmit="return confirm('Unmatch with this member?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="report-link" type="submit">Unmatch</button>
+                                </form>
+                                <form action="{{ url_for('user.block_user', blocked_user_id=other_user.id) }}" method="post" onsubmit="return confirm('Block this member? They will no longer be able to find or message you.');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button class="report-link" type="submit">Block</button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </section>
+            {% else %}
+            <section class="connections-empty">
+                <div class="empty-heart" aria-hidden="true">♡</div>
+                <p class="eyebrow">Your story is just beginning</p>
+                <h2>No connections yet</h2>
+                <p>Explore the community, like someone who catches your eye, and your mutual matches will show up here.</p>
+                <a href="{{ url_for('user.explore') }}" class="btn btn-primary">Explore profiles</a>
+            </section>
+            {% endif %}
+        </main>
+    </div>
+</body>
+</html>

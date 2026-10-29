@@ -2,28 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f8f8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1efc1e">
     <title>My profile | VOVEOFRICA</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
-    <style>
-        .profile-layout { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr); gap: 24px; padding-top: 34px; }
-        .profile-panel, .profile-aside { padding: 28px; border: 1px solid var(--line); border-radius: 26px; background: var(--panel); }
-        .profile-heading { display: flex; align-items: center; gap: 20px; margin-bottom: 28px; }
-        .profile-avatar { display: grid; place-items: center; width: 92px; height: 92px; flex: 0 0 auto; border-radius: 28px; background: linear-gradient(145deg, #ef64ef, #fcf300 62%, #1efc1e); color: #28202b; font-size: 2rem; font-weight: 800; }
-        .profile-heading h1 { margin: 0 0 6px; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.05em; }
-        .profile-heading p, .profile-aside p { margin: 0; color: var(--muted); line-height: 1.65; }
-        .profile-section { padding: 22px 0; border-top: 1px solid var(--line); }
-        .profile-section h2, .profile-aside h2 { margin: 0 0 14px; font-size: 1.1rem; }
-        .profile-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-        .detail-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: .82rem; }
-        .interest-list { display: flex; flex-wrap: wrap; gap: 9px; }
-        .interest-list span { padding: 8px 12px; border-radius: 999px; background: rgba(239,100,239,.12); font-size: .9rem; }
-        .profile-aside { align-self: start; }
-        .profile-aside .btn { margin-top: 20px; }
-        @media (max-width: 760px) { .profile-layout { grid-template-columns: 1fr; } }
-        @media (max-width: 480px) { .profile-panel, .profile-aside { padding: 20px; } .profile-heading { align-items: flex-start; flex-direction: column; } .profile-details { grid-template-columns: 1fr; } }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 </head>
 <body>
     <div class="page-shell">
@@ -33,44 +16,145 @@
                 <span>VOVEOFRICA</span>
             </a>
             <ul class="nav-links">
-                <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
-                <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
+                <li><a href="{{ url_for('user.explore') }}">Explore</a></li>
+                <li><a href="{{ url_for('user.connections') }}">Connections</a></li>
                 <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
                 <li><a href="{{ url_for('user.profile') }}" class="active" aria-current="page">My profile</a></li>
+                <li><a href="{{ url_for('user.notifications') }}">Activity{% if unread_notification_count %} <span class="notification-count">{{ unread_notification_count }}</span>{% endif %}</a></li>
             </ul>
             <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary small">My dashboard</a>
         </nav>
 
-        <main class="profile-layout">
-            <section class="profile-panel" aria-labelledby="profile-title">
-                <div class="profile-heading">
-                    <div class="profile-avatar" aria-hidden="true">{{ user.username[:1]|upper }}</div>
-                    <div>
-                        <p class="eyebrow">Your introduction</p>
-                        <h1 id="profile-title">{{ user.first_name }} {{ user.last_name }}</h1>
-                        <p>{{ user.city }}, {{ user.country }}</p>
+        <main class="profile-page">
+            <header class="profile-intro">
+                <div>
+                    <p class="eyebrow">A little more of you</p>
+                    <h1>Your profile, your story.</h1>
+                    <p>Add a photo, share the things you love, and give someone a conversation starter.</p>
+                </div>
+                <span class="profile-intro-spark" aria-hidden="true">✦</span>
+            </header>
+
+            <div class="profile-layout">
+                <section class="profile-panel" aria-labelledby="profile-title">
+                    <div class="profile-heading">
+                        {% if user.profile_photo %}
+                        <img class="profile-avatar" src="{{ url_for('user.profile_photo', filename=user.profile_photo) }}" alt="Your profile photo">
+                        {% else %}
+                        <div class="profile-avatar profile-avatar-placeholder" aria-hidden="true">{{ user.first_name[:1]|upper }}</div>
+                        {% endif %}
+                        <div class="profile-heading-copy">
+                            <p class="eyebrow">Your introduction</p>
+                            <h2 id="profile-title">{{ user.first_name }} {{ user.last_name }}</h2>
+                            <p>{{ user.city }}, {{ user.country }}</p>
+                        </div>
                     </div>
-                </div>
-                <div class="profile-section">
-                    <h2>About me</h2>
-                    <p>{{ user.bio or "Add an introduction in settings to help other members get to know you." }}</p>
-                </div>
-                <div class="profile-section">
-                    <h2>My details</h2>
-                    <div class="profile-details">
-                        <div><span class="detail-label">Username</span><strong>{{ user.username }}</strong></div>
-                        <div><span class="detail-label">Email</span><strong>{{ user.email }}</strong></div>
-                        <div><span class="detail-label">Member since</span><strong>{{ user.created_at.strftime("%B %Y") }}</strong></div>
-                        <div><span class="detail-label">Profile status</span><strong>Visible to matches</strong></div>
+
+                    {% if error %}
+                    <p class="profile-error" role="alert">{{ error }}</p>
+                    {% endif %}
+
+                    <form class="profile-form" action="{{ url_for('user.profile') }}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <section class="profile-section">
+                            <h2>Your profile photo</h2>
+                            <p class="section-hint">A clear, friendly photo helps people put a face to your story. JPG, PNG, or WebP, up to 5 MB.</p>
+                            <label class="field-label" for="profile_photo">Choose a photo</label>
+                            <input class="photo-input" id="profile_photo" name="profile_photo" type="file" accept="image/jpeg,image/png,image/webp">
+                            {% if user.profile_photo %}
+                            <label class="remove-photo">
+                                <input type="checkbox" name="remove_photo" value="1">
+                                Remove my current photo
+                            </label>
+                            {% endif %}
+                        </section>
+
+                        <section class="profile-section">
+                            <h2>About me</h2>
+                            <label class="field-label" for="bio">Your introduction</label>
+                            <textarea id="bio" name="bio" maxlength="2000" rows="5" placeholder="A few words about what makes you, you...">{{ user.bio or "" }}</textarea>
+                            <label class="field-label" for="interests">Things I enjoy</label>
+                            <input id="interests" name="interests" type="text" maxlength="500" value="{{ user.interests or '' }}" placeholder="Cooking, live music, weekend walks">
+                            <span class="field-hint">Separate interests with commas so they are easy to scan.</span>
+                            <label class="field-label" for="relationship_goal">What are you looking for?</label>
+                            <select id="relationship_goal" name="relationship_goal">
+                                <option value="">Open to seeing where it goes</option>
+                                {% for goal in relationship_goals %}
+                                <option value="{{ goal }}" {% if user.relationship_goal == goal %}selected{% endif %}>{{ goal }}</option>
+                                {% endfor %}
+                            </select>
+                        </section>
+
+                        <section class="profile-section">
+                            <h2>Give them a conversation starter</h2>
+                            <label class="field-label" for="profile_prompt">Choose a prompt</label>
+                            <select id="profile_prompt" name="profile_prompt">
+                                <option value="">Choose a prompt (optional)</option>
+                                {% for prompt in profile_prompts %}
+                                <option value="{{ prompt }}" {% if user.profile_prompt == prompt %}selected{% endif %}>{{ prompt }}</option>
+                                {% endfor %}
+                            </select>
+                            <label class="field-label" for="profile_answer">Your answer</label>
+                            <textarea id="profile_answer" name="profile_answer" maxlength="280" rows="3" placeholder="Share a little detail someone can ask you about...">{{ user.profile_answer or "" }}</textarea>
+                        </section>
+
+                        <section class="profile-section">
+                            <h2>Account details</h2>
+                            <div class="account-fields">
+                                <label class="field-label" for="username">Username
+                                    <input id="username" name="username" type="text" maxlength="50" value="{{ user.username }}" required>
+                                </label>
+                                <label class="field-label" for="email">Email address
+                                    <input id="email" name="email" type="email" maxlength="120" value="{{ user.email }}" required>
+                                </label>
+                            </div>
+                        </section>
+
+                        <button class="btn btn-primary save-profile" type="submit">Save my profile</button>
+                    </form>
+                </section>
+
+                <aside class="profile-aside">
+                    <span class="aside-spark" aria-hidden="true">♡</span>
+                    <p class="eyebrow">Make a great first impression</p>
+                    <h2>Your story deserves to shine.</h2>
+                    <p>A warm photo, a few favorite interests, and one thoughtful answer make it easier for someone to say hello.</p>
+                    <div class="interest-preview" aria-label="Your saved interests">
+                        {% if user.interests %}
+                            {% for interest in user.interests.split(",") %}
+                                {% if interest.strip() %}<span>{{ interest.strip() }}</span>{% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span>Add the things you enjoy</span>
+                        {% endif %}
                     </div>
-                </div>
-            </section>
-            <aside class="profile-aside">
-                <p class="eyebrow">Make a great first impression</p>
-                <h2>Your story deserves to shine.</h2>
-                <p>A complete profile helps people discover what makes you you. Add a few details, share your interests, and keep your introduction up to date.</p>
-                <a href="{{ url_for('user.filter_users') }}" class="btn btn-primary">Update preferences</a>
-            </aside>
+                    {% if user.profile_prompt and user.profile_answer %}
+                    <blockquote class="aside-prompt">
+                        <span>{{ user.profile_prompt }}</span>
+                        <p>{{ user.profile_answer }}</p>
+                    </blockquote>
+                    {% endif %}
+                    <p class="privacy-note">Your photo and profile details are shared with signed-in members of the community.</p>
+                    <div class="verification-card">
+                        {% if user.verification_status == "verified" %}
+                        <span class="verified-badge">✓ Verified profile</span>
+                        <p>Your profile has been reviewed by our team.</p>
+                        {% elif user.verification_status == "pending" %}
+                        <span class="verification-pending">Review pending</span>
+                        <p>Your verification request is with our team.</p>
+                        {% else %}
+                        <p>Add a reviewed verification badge to help new connections feel confident.</p>
+                        {% endif %}
+                        <a class="btn btn-secondary small" href="{{ url_for('user.verification') }}">Manage verification</a>
+                    </div>
+                    <div class="verification-card">
+                        <p class="eyebrow">Membership</p>
+                        <p>{{ "Premium access is active." if is_premium else "Free includes 10 likes daily. Premium adds more likes, saved filters, and who-liked-you access." }}</p>
+                        <a class="btn btn-secondary small" href="{{ url_for('user.subscription_account') }}">Manage purchases</a>
+                        {% if not is_premium %}<a class="btn btn-primary small" href="{{ url_for('root.subscription') }}">Explore Premium</a>{% endif %}
+                    </div>
+                </aside>
+            </div>
         </main>
     </div>
 </body>

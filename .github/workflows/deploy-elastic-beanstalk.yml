@@ -1,0 +1,97 @@
+name: Deploy to AWS Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy production
+    runs-on: ubuntu-latest
+    environment: production
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install application dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Check Python syntax
+        run: python -m compileall -q run.py pkg migrations
+
+      - name: Validate deployment configuration
+        env:
+          APP_ENV: ${{ vars.APP_ENV }}
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          EB_APPLICATION_NAME: ${{ vars.EB_APPLICATION_NAME }}
+          EB_ENVIRONMENT_NAME: ${{ vars.EB_ENVIRONMENT_NAME }}
+          EB_DEPLOYMENT_BUCKET: ${{ vars.EB_DEPLOYMENT_BUCKET }}
+          ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+          PROFILE_PHOTO_S3_BUCKET: ${{ vars.PROFILE_PHOTO_S3_BUCKET }}
+        run: |
+          for name in APP_ENV AWS_ROLE_ARN AWS_REGION EB_APPLICATION_NAME EB_ENVIRONMENT_NAME EB_DEPLOYMENT_BUCKET ADMIN_EMAILS PROFILE_PHOTO_S3_BUCKET; do
+            if [ -z "${!name}" ]; then
+              echo "Missing required GitHub production environment variable: ${name}" >&2
+              exit 1
+            fi
+          done
+          if [ "$APP_ENV" != "production" ]; then
+            echo "APP_ENV must be production for this deployment." >&2
+            exit 1
+          fi
+
+      - name: Validate migration graph
+        env:
+          APP_ENV: testing
+          SECRET_KEY: ci-only-migration-check-key
+          DATABASE_URL: mysql+pymysql://ci:ci@127.0.0.1:3306/ci
+          ADMIN_EMAILS: ci@example.com
+        run: |
+          python -m flask --app run.py db heads
+
+      - name: Configure AWS credentials with OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Package application source
+        run: git archive --format=zip --output=deployment.zip HEAD
+
+      - name: Upload source bundle
+        run: |
+          aws s3 cp deployment.zip \
+            "s3://${{ vars.EB_DEPLOYMENT_BUCKET }}/voveofrica/${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}.zip"
+
+      - name: Create Elastic Beanstalk application version
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name "${{ vars.EB_APPLICATION_NAME }}" \
+            --version-label "voveo-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}" \
+            --source-bundle S3Bucket="${{ vars.EB_DEPLOYMENT_BUCKET }}",S3Key="voveofrica/${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}.zip" \
+            --process
+
+      - name: Deploy application version
+        run: |
+          aws elasticbeanstalk update-environment \
+            --environment-name "${{ vars.EB_ENVIRONMENT_NAME }}" \
+            --version-label "voveo-${GITHUB_SHA}-${GITHUB_RUN_ATTEMPT}"
+          aws elasticbeanstalk wait environment-updated \
+            --environment-name "${{ vars.EB_ENVIRONMENT_NAME }}"

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_box.css') }}">
 </head>
+
 <body>
     <div class="page-shell">
         <nav class="topbar" aria-label="Main navigation">
@@ -31,34 +33,59 @@
                         <span id="connection-status" role="status" aria-live="polite">Connecting…</span>
                     </div>
                 </div>
-                <a href="{{ url_for('user.report_user', reported_user_id=other_user.id) }}" class="btn btn-secondary small">Report</a>
+                <div class="chat-safety-actions">
+                    <a href="{{ url_for('user.report_user', reported_user_id=other_user.id) }}"
+                        class="btn btn-secondary small">Report</a>
+                    <form action="{{ url_for('user.block_user', blocked_user_id=other_user.id) }}" method="post"
+                        onsubmit="return confirm('Block this member and end the match?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-secondary small" type="submit">Block</button>
+                    </form>
+                    <form action="{{ url_for('user.unmatch_user', other_user_id=other_user.id) }}" method="post" onsubmit="return confirm('Unmatch with this member?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-secondary small" type="submit">Unmatch</button>
+                    </form>
+                </div>
             </header>
 
             <p id="chat-error" class="chat-error" role="alert" aria-live="assertive"></p>
+            <p id="typing-indicator" class="typing-indicator" role="status" aria-live="polite"></p>
 
             <ol class="messages" id="messages" aria-label="Conversation messages" aria-live="polite">
                 {% for message in messages %}
                 <li class="message {% if message.sender_id == current_user.id %}sent{% else %}received{% endif %}">
-                    <span class="message-sender">{% if message.sender_id == current_user.id %}You{% else %}{{ other_user.username }}{% endif %}</span>
+                    <span class="message-sender">{% if message.sender_id == current_user.id %}You{% else %}{{
+                        other_user.username }}{% endif %}</span>
                     <span class="message-text">{{ message.text }}</span>
-                    <time datetime="{{ message.sent_at.isoformat() }}">{{ message.sent_at.strftime("%b %d, %H:%M") }}</time>
+                    <time datetime="{{ message.sent_at.isoformat() }}">{{ message.sent_at.strftime("%b %d, %H:%M")
+                        }}</time>
                 </li>
                 {% else %}
-                <li class="empty-conversation" id="empty-conversation">Say hello and start your conversation.</li>
+                <li class="empty-conversation" id="empty-conversation">
+                    <strong>Your story starts with hello.</strong>
+                    <p>Ask about a favorite place, a weekend ritual, or something from their profile.</p>
+                    <button type="button" class="prompt-suggestion">What does your perfect weekend look like?</button>
+                    <button type="button" class="prompt-suggestion">What is something that always makes you
+                        smile?</button>
+                </li>
                 {% endfor %}
             </ol>
 
             <form class="composer" id="chat-form">
                 <label class="visually-hidden" for="message-input">Type a message</label>
-                <input id="message-input" name="text" type="text" maxlength="5000" placeholder="Write a message..." autocomplete="off" required>
+                <input id="message-input" name="text" type="text" maxlength="5000" placeholder="Write a message..."
+                    autocomplete="off" aria-describedby="message-guidance" required>
                 <button id="send-button" type="submit" class="btn btn-primary" disabled>Send</button>
             </form>
+            <p class="message-guidance" id="message-guidance">Keep it kind. Offensive language can’t be sent.</p>
         </main>
     </div>
 
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script>
-        const otherUserId = {{ other_user.id|tojson }};
+        const otherUserId = {{ other_user.id| tojson }};
+        const otherUsername = {{ other_user.username| tojson }};
+        const currentUserId = {{ current_user.id| tojson }};
         const socket = io("/chat");
         const messages = document.getElementById("messages");
         const emptyConversation = document.getElementById("empty-conversation");
@@ -67,6 +94,8 @@
         const sendButton = document.getElementById("send-button");
         const status = document.getElementById("connection-status");
         const error = document.getElementById("chat-error");
+        const typingIndicator = document.getElementById("typing-indicator");
+        let typingTimeout;
 
         function appendMessage(message) {
             if (emptyConversation) {
@@ -74,23 +103,23 @@
             }
 
             const item = document.createElement("li");
-            item.className = message.sender_id === {{ current_user.id|tojson }} ? "message sent" : "message received";
+            item.className = message.sender_id === currentUserId ? "message sent" : "message received";
 
-            const sender = document.createElement("span");
-            sender.className = "message-sender";
-            sender.textContent = message.sender_id === {{ current_user.id|tojson }} ? "You" : message.sender_name;
+        const sender = document.createElement("span");
+        sender.className = "message-sender";
+        sender.textContent = message.sender_id === currentUserId ? "You" : message.sender_name;
 
-            const text = document.createElement("span");
-            text.className = "message-text";
-            text.textContent = message.text;
+        const text = document.createElement("span");
+        text.className = "message-text";
+        text.textContent = message.text;
 
-            const time = document.createElement("time");
-            time.dateTime = message.sent_at;
-            time.textContent = new Date(message.sent_at).toLocaleString();
+        const time = document.createElement("time");
+        time.dateTime = message.sent_at;
+        time.textContent = new Date(message.sent_at).toLocaleString();
 
-            item.append(sender, text, time);
-            messages.appendChild(item);
-            messages.scrollTop = messages.scrollHeight;
+        item.append(sender, text, time);
+        messages.appendChild(item);
+        messages.scrollTop = messages.scrollHeight;
         }
 
         socket.on("connect", () => {
@@ -118,7 +147,31 @@
             sendButton.disabled = true;
         });
 
-        socket.on("new_message", appendMessage);
+        socket.on("new_message", (message) => {
+            appendMessage(message);
+            if (message.sender_id !== currentUserId) {
+            socket.emit("mark_messages_read", { other_user_id: otherUserId });
+        }
+        });
+        socket.on("typing", (payload) => {
+            typingIndicator.textContent = payload.is_typing ? `${otherUsername} is typing…` : "";
+        });
+
+        input.addEventListener("input", () => {
+            if (!socket.connected) return;
+            socket.emit("typing", { other_user_id: otherUserId, is_typing: input.value.trim().length > 0 });
+            window.clearTimeout(typingTimeout);
+            typingTimeout = window.setTimeout(() => {
+                socket.emit("typing", { other_user_id: otherUserId, is_typing: false });
+            }, 1200);
+        });
+
+        document.querySelectorAll(".prompt-suggestion").forEach((button) => {
+            button.addEventListener("click", () => {
+                input.value = button.textContent.trim();
+                input.focus();
+            });
+        });
 
         form.addEventListener("submit", (event) => {
             event.preventDefault();
@@ -148,4 +201,5 @@
         messages.scrollTop = messages.scrollHeight;
     </script>
 </body>
+
 </html>

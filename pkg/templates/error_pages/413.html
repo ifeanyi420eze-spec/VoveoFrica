@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1efc1e" />
+    <title>Upload too large | VOVEOFRICA</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/theme.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/413.css') }}"
+    />
+  </head>
+  <body>
+    <main class="upload-error-page">
+      <section class="upload-error-card">
+        <span class="upload-error-icon" aria-hidden="true">↑</span>
+        <p class="eyebrow">A smaller file, please</p>
+        <h1>That photo is too large</h1>
+        <p>Profile photos must be 5 MB or smaller. Choose a smaller image and try uploading it again.</p>
+        <a class="btn btn-primary" href="{{ url_for('user.profile') }}">Back to my profile</a>
+      </section>
+    </main>
+  </body>
+</html>

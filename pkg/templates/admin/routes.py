@@ -1,11 +1,22 @@
 from functools import wraps
 
-from flask import Blueprint, abort, render_template, session
+from datetime import datetime
 
-from pkg.models import Match, Report, User
+from flask import Blueprint, abort, redirect, render_template, request, session, url_for
+
+from pkg import db
+from pkg.models import Match, Notification, Report, User
 
 
 admin_routes = Blueprint("admin", __name__, url_prefix="/admin")
+ADMIN_PAGE_SIZE = 50
+
+
+def _admin_page():
+    try:
+        return max(1, int(request.args.get("page", "1")))
+    except ValueError:
+        return 1
 
 
 def admin_required(view):
@@ -32,25 +43,70 @@ def dashboard():
 @admin_routes.route("/users")
 @admin_required
 def users():
+    pagination = db.paginate(
+        User.query.order_by(User.created_at.desc()),
+        page=_admin_page(),
+        per_page=ADMIN_PAGE_SIZE,
+        error_out=False,
+    )
     return render_template(
         "admin/pages/user_management.html",
-        users=User.query.order_by(User.created_at.desc()).all(),
+        users=pagination.items,
+        pagination=pagination,
     )
+
+
+@admin_routes.route("/users/<int:user_id>/verification", methods=["POST"])
+@admin_required
+def review_verification(user_id):
+    user = db.session.get(User, user_id)
+    if user is None:
+        abort(404)
+    decision = request.form.get("decision")
+    if decision not in {"verified", "rejected"} or user.verification_status != "pending":
+        abort(400, "A pending verification request and valid decision are required.")
+    user.verification_status = decision
+    user.verification_reviewed_at = datetime.utcnow()
+    status_text = "approved" if decision == "verified" else "not approved"
+    db.session.add(
+        Notification(
+            user_id=user.id,
+            text=f"Your profile verification request was {status_text}.",
+            category="verification",
+            link_url=url_for("user.verification"),
+        )
+    )
+    db.session.commit()
+    return redirect(url_for("admin.users"))
 
 
 @admin_routes.route("/matches")
 @admin_required
 def matches():
+    pagination = db.paginate(
+        Match.query.order_by(Match.created_at.desc()),
+        page=_admin_page(),
+        per_page=ADMIN_PAGE_SIZE,
+        error_out=False,
+    )
     return render_template(
         "admin/pages/match_management.html",
-        matches=Match.query.order_by(Match.created_at.desc()).all(),
+        matches=pagination.items,
+        pagination=pagination,
     )
 
 
 @admin_routes.route("/reports")
 @admin_required
 def reports():
+    pagination = db.paginate(
+        Report.query.order_by(Report.created_at.desc()),
+        page=_admin_page(),
+        per_page=ADMIN_PAGE_SIZE,
+        error_out=False,
+    )
     return render_template(
         "admin/pages/reports_management.html",
-        reports=Report.query.order_by(Report.created_at.desc()).all(),
+        reports=pagination.items,
+        pagination=pagination,
     )

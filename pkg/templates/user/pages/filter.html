@@ -18,6 +18,7 @@
                 <li><a href="{{ url_for('user.discover') }}">Discover</a></li>
                 <li><a href="{{ url_for('user.matches') }}">Matches</a></li>
                 <li><a href="{{ url_for('user.filter_users') }}" class="active" aria-current="page">Filter</a></li>
+                <li><a href="{{ url_for('user.notifications') }}">Activity{% if unread_notification_count %} <span class="notification-count">{{ unread_notification_count }}</span>{% endif %}</a></li>
             </ul>
             <a href="{{ url_for('user.chats') }}" class="btn btn-primary small">Messages</a>
         </nav>
@@ -26,51 +27,41 @@
             <section class="filter-panel">
                 <p class="eyebrow">Personalize your match feed</p>
                 <h1>Who are you looking for?</h1>
-
-                <div class="form-block">
-                    <label>Age range</label>
-                    <div class="range-row">
-                        <span>22</span>
-                        <input type="range" min="18" max="45" value="28">
-                        <span>35+</span>
+                {% if is_premium %}
+                <p class="filter-intro">Choose details that matter to you. These preferences stay saved for future visits, and you can change them whenever you like.</p>
+                <form action="{{ url_for('user.filter_users') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="form-block">
+                        <label for="preferred_country">Country</label>
+                        <input id="preferred_country" name="preferred_country" type="text" maxlength="80" autocomplete="country-name" value="{{ user.preferred_country or '' }}" placeholder="Any country">
                     </div>
-                </div>
-
-                <div class="form-block">
-                    <label>Distance</label>
-                    <select>
-                        <option>Within 20 km</option>
-                        <option>Within 50 km</option>
-                        <option>Within 100 km</option>
-                        <option>Anywhere</option>
-                    </select>
-                </div>
-
-                <div class="form-block">
-                    <label>Relationship goals</label>
-                    <div class="checkbox-grid">
-                        <label><input type="checkbox" checked> Long-term</label>
-                        <label><input type="checkbox"> Casual dating</label>
-                        <label><input type="checkbox" checked> Friendship</label>
-                        <label><input type="checkbox"> Marriage</label>
+                    <div class="form-block">
+                        <label for="preferred_city">City</label>
+                        <input id="preferred_city" name="preferred_city" type="text" maxlength="80" autocomplete="address-level2" value="{{ user.preferred_city or '' }}" placeholder="Any city">
                     </div>
-                </div>
-
-                <div class="form-block">
-                    <label>Interests</label>
-                    <div class="tag-wrap">
-                        <span class="tag active">Travel</span>
-                        <span class="tag">Music</span>
-                        <span class="tag">Books</span>
-                        <span class="tag">Fitness</span>
-                        <span class="tag">Food</span>
+                    <fieldset class="form-block">
+                        <legend>Relationship goals</legend>
+                        <div class="checkbox-grid">
+                            {% for goal in relationship_goals %}
+                            <label><input type="checkbox" name="preferred_goals" value="{{ goal }}" {% if goal in (user.preferred_goals or '').split(',') %}checked{% endif %}> {{ goal }}</label>
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                    <div class="form-block">
+                        <label for="preferred_interests">Interests you would love to share</label>
+                        <input id="preferred_interests" name="preferred_interests" type="text" maxlength="500" value="{{ user.preferred_interests or '' }}" placeholder="Travel, music, books">
+                        <small>Separate interests with commas. Profiles matching every listed interest will appear.</small>
                     </div>
-                </div>
-
-                <div class="action-row">
-                    <button class="btn btn-secondary">Reset</button>
-                    <button class="btn btn-primary">Save preferences</button>
-                </div>
+                    <div class="action-row">
+                        <button class="btn btn-secondary" type="submit" name="reset" value="1" formnovalidate>Clear saved preferences</button>
+                        <button class="btn btn-primary" type="submit">Save and explore</button>
+                    </div>
+                </form>
+                {% else %}
+                <p class="filter-intro">Free members can use temporary location, goal, and interest filters directly in Explore. Premium lets you save those preferences for your next visit.</p>
+                <a class="btn btn-primary" href="{{ url_for('root.subscription') }}">Explore Premium plans</a>
+                <a class="btn btn-secondary" href="{{ url_for('user.explore', country='', city='', goal='', interests='') }}">Explore with temporary filters</a>
+                {% endif %}
             </section>
         </main>
     </div>

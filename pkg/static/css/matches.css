@@ -141,8 +141,31 @@ img { display: block; max-width: 100%; }
 }
 
 .match-cover {
+  position: relative;
   height: 280px;
+  overflow: hidden;
   background: linear-gradient(160deg, #f7dadd, #ee7eae, #835fe3);
+}
+
+.match-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.match-avatar-fallback {
+  display: grid;
+  width: 88px;
+  height: 88px;
+  margin: 96px auto 0;
+  place-items: center;
+  border: 4px solid rgba(255,255,255,.9);
+  border-radius: 28px;
+  background: rgba(255,255,255,.78);
+  color: #52234d;
+  font-size: 1.8rem;
+  font-weight: 800;
 }
 
 .rose-bg { background: linear-gradient(160deg, #fbc2d2, #f77a9a, #a963f2); }
@@ -186,10 +209,26 @@ img { display: block; max-width: 100%; }
   margin: 12px 0 18px;
 }
 
+.match-interests {
+  margin: 0 0 18px;
+}
+
+.match-interests span {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(30, 252, 30, .14);
+  color: #233d23;
+  font-size: .79rem;
+  font-weight: 700;
+}
+
 .match-actions {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
 }
+.match-actions form { margin: 0; }
 
 @media (max-width: 900px) {
   .matches-grid { grid-template-columns: 1fr; }

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1efc1e">
+    <title>Profile verification | VOVEOFRICA</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/verification.css') }}">
+</head>
+<body>
+    <div class="page-shell">
+        <nav class="topbar" aria-label="Main navigation">
+            <a href="{{ url_for('user.dashboard') }}" class="brand" aria-label="VOVEOFRICA dashboard">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="">
+                <span>VOVEOFRICA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('user.explore') }}">Explore</a></li>
+                <li><a href="{{ url_for('user.profile') }}">My profile</a></li>
+                <li><a href="{{ url_for('user.notifications') }}">Activity{% if unread_notification_count %} <span class="notification-count">{{ unread_notification_count }}</span>{% endif %}</a></li>
+            </ul>
+            <a href="{{ url_for('user.profile') }}" class="btn btn-secondary small">Back to profile</a>
+        </nav>
+
+        <main class="verification-page">
+            <section class="verification-card">
+                <span class="verification-art" aria-hidden="true">✓</span>
+                <p class="eyebrow">Trust makes connection stronger</p>
+                <h1>Profile verification</h1>
+                {% if user.verification_status == "verified" %}
+                <p class="verification-status">Your profile is verified. Members will see a verified badge on your profile.</p>
+                {% elif user.verification_status == "pending" %}
+                <p class="verification-status">Your request is with our team. We will update your activity center when it has been reviewed.</p>
+                {% else %}
+                {% if user.verification_status == "rejected" %}
+                <p class="verification-status">Your last request could not be approved. You can contact support if you have questions, then request another review.</p>
+                {% else %}
+                <p class="verification-status">Request a profile review to earn a visible verified badge and help the community connect with confidence.</p>
+                {% endif %}
+                <p class="verification-privacy">Verification requests are reviewed by the VOVEOFRICA team. This app does not collect identity documents; contact support for the private review process and never send sensitive documents in chat.</p>
+                <form action="{{ url_for('user.verification') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-primary" type="submit">Request verification review</button>
+                </form>
+                {% endif %}
+                <a class="support-link" href="{{ url_for('root.support') }}">Visit safety and support</a>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

@@ -26,25 +26,22 @@
             <section class="report-card">
                 <p class="eyebrow">Safety and support</p>
                 <h1>Report an issue</h1>
-                <p class="lede">Tell us what happened so we can review it promptly and keep the community safe.</p>
+                <p class="lede">Tell us what happened with {{ reported_user.first_name }} so we can review it promptly and keep the community safe.</p>
 
-                <form>
-                    <label>Issue type</label>
-                    <select>
-                        <option>Harassment</option>
-                        <option>Fake profile</option>
-                        <option>Inappropriate content</option>
-                        <option>Spam</option>
-                        <option>Other</option>
+                <form action="{{ url_for('user.report_user', reported_user_id=reported_user.id) }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label for="reason">Issue type</label>
+                    <select id="reason" name="reason" required>
+                        <option value="">Choose a reason</option>
+                        <option value="Harassment">Harassment or unwanted contact</option>
+                        <option value="Fake profile">Fake or misleading profile</option>
+                        <option value="Inappropriate content">Inappropriate content</option>
+                        <option value="Spam">Spam or scam</option>
+                        <option value="Other">Other safety concern</option>
                     </select>
 
-                    <label>How can we help?</label>
-                    <textarea rows="6" placeholder="Briefly describe what happened..."></textarea>
-
-                    <div class="checkbox-row">
-                        <input type="checkbox" id="anonymous">
-                        <label for="anonymous">Submit anonymously</label>
-                    </div>
+                    <label for="details">What happened? <span>(optional)</span></label>
+                    <textarea id="details" name="details" rows="6" maxlength="4000" placeholder="Briefly describe what happened..."></textarea>
 
                     <button type="submit" class="btn btn-primary">Send report</button>
                 </form>

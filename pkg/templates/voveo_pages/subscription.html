@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8f8f8">
+    <meta name="theme-color" content="#1efc1e">
     <meta name="description" content="Explore VOVEOFRICA subscription plans and billing periods.">
     <title>Subscriptions | VOVEOFRICA</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
@@ -22,37 +22,108 @@
                 <li><a href="{{ url_for('user.chats') }}">Messages</a></li>
                 <li><a href="{{ url_for('root.subscription') }}" class="active" aria-current="page">Plans</a></li>
             </ul>
+            {% if logged_in %}
+            <a href="{{ url_for('user.subscription_account') }}" class="btn btn-secondary small">My plan</a>
+            {% else %}
             <a href="{{ url_for('user.login') }}" class="btn btn-primary small">Log in</a>
+            {% endif %}
         </nav>
 
         <main class="subscription-page">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                <p class="billing-flash billing-flash-{{ category }}" role="status">{{ message }}</p>
+                {% endfor %}
+            {% endwith %}
             <header class="subscription-hero">
-                <p class="eyebrow">More ways to connect</p>
+                <p class="eyebrow">A free place to start. Premium when it suits you.</p>
                 <h1>Choose the pace that works for you.</h1>
-                <p>Pick a subscription period to suit your plans. Every option is priced in Nigerian naira.</p>
+                <p>Start for free, then choose a one-time Premium pass if you want more ways to connect. Nothing auto-renews.</p>
             </header>
 
+            <section class="plan-card free-plan" aria-labelledby="free-plan-title">
+                <div>
+                    <p class="eyebrow">Free, always</p>
+                    <h2 id="free-plan-title">Community</h2>
+                    <p class="plan-description">Create your profile, meet people, and start conversations without paying.</p>
+                    <ul class="benefit-list">
+                        <li>Profile, discovery, matches, and messaging</li>
+                        <li>Up to 10 likes each day</li>
+                        <li>Report, block, and unmatch controls</li>
+                    </ul>
+                </div>
+                <a class="btn btn-secondary plan-action" href="{% if logged_in %}{{ url_for('user.dashboard') }}{% else %}{{ url_for('user.register') }}{% endif %}">{% if logged_in %}Go to your account{% else %}Create a free account{% endif %}</a>
+            </section>
+
             {% if plans %}
-            <section class="plans-grid" aria-label="Subscription plans">
-                {% for plan in plans %}
-                <article class="plan-card{% if plan.is_featured %} plan-featured{% endif %}">
-                    {% if plan.is_featured %}<span class="popular-badge">Popular choice</span>{% endif %}
-                    <div class="plan-topline"><h2>{{ plan.name }}</h2><span class="plan-duration">{{ plan.duration_days }} days</span></div>
-                    <p class="plan-description">{{ plan.description }}</p>
-                    <p class="plan-price"><strong>₦{{ "{:,.0f}".format(plan.amount_ngn) }}</strong><span>/ {{ plan.duration_days }} days</span></p>
-                    <a class="btn {% if plan.is_featured %}btn-primary{% else %}btn-secondary{% endif %} plan-action" href="{{ url_for('user.register') }}">Choose {{ plan.name }}</a>
-                </article>
-                {% endfor %}
+            <section class="plan-section" aria-labelledby="premium-title">
+                <div class="plan-section-heading">
+                    <div><p class="eyebrow">More discovery, your way</p><h2 id="premium-title">Premium one-time passes</h2></div>
+                    <span>No automatic renewal</span>
+                </div>
+                <ul class="benefit-list premium-benefits">
+                    <li>Up to 50 likes each day</li>
+                    <li>See members who liked you</li>
+                    <li>Save discovery preferences</li>
+                    <li>Premium remains active for the period you purchase</li>
+                </ul>
+                <section class="plans-grid" aria-label="Premium pass durations">
+                    {% for plan in plans %}
+                    <article class="plan-card{% if plan.is_featured %} plan-featured{% endif %}{% if plan.name == 'Yearly' %} plan-yearly{% endif %}">
+                        {% if plan.is_featured %}<span class="popular-badge">Popular choice</span>{% endif %}
+                        <div class="plan-topline"><h2>{{ plan.name }}</h2><span class="plan-duration">{{ plan.duration_days }} days</span></div>
+                        <p class="plan-description">{{ plan.description }}</p>
+                        <p class="plan-price"><strong>₦{{ "{:,.0f}".format(plan.amount_ngn) }}</strong><span>one-time</span></p>
+                        {% if plan.id in monthly_equivalents and monthly_equivalents[plan.id].months > 1 %}
+                        <p class="plan-value">About ₦{{ "{:,.0f}".format(monthly_equivalents[plan.id].amount) }}/month{% if monthly_equivalents[plan.id].savings_percent %} · save {{ monthly_equivalents[plan.id].savings_percent }}% vs monthly{% endif %}</p>
+                        {% elif plan.duration_days < 30 %}
+                        <p class="plan-value">Flexible short pass</p>
+                        {% endif %}
+                        {% if logged_in and checkout_available %}
+                        <form class="plan-action" action="{{ url_for('user.checkout_subscription', plan_id=plan.id) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button class="btn {% if plan.is_featured %}btn-primary{% else %}btn-secondary{% endif %} plan-action" type="submit">Buy {{ plan.name }}</button>
+                        </form>
+                        {% elif logged_in %}
+                        <button class="btn btn-secondary plan-action" type="button" disabled>Checkout unavailable</button>
+                        {% else %}
+                        <a class="btn {% if plan.is_featured %}btn-primary{% else %}btn-secondary{% endif %} plan-action" href="{{ url_for('user.login') }}">Sign in to choose</a>
+                        {% endif %}
+                    </article>
+                    {% endfor %}
+                </section>
             </section>
             {% else %}
             <section class="subscription-note" aria-live="polite">
-                <p>There are no subscription plans available at this time. Please check back later.</p>
+                <p>There are no Premium passes available at this time. Please check back later.</p>
+            </section>
+            {% endif %}
+
+            {% if boost_plans %}
+            <section class="boost-section" aria-labelledby="boost-title">
+                <div>
+                    <p class="eyebrow">Optional, one-time add-on</p>
+                    <h2 id="boost-title">Get a little more visibility</h2>
+                    <p>A Boost prioritizes your profile in discovery for 24 hours. It does not guarantee likes or matches and does not require Premium.</p>
+                </div>
+                {% for plan in boost_plans %}
+                    {% if logged_in and checkout_available %}
+                    <form action="{{ url_for('user.checkout_subscription', plan_id=plan.id) }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-primary" type="submit">Boost for ₦{{ "{:,.0f}".format(plan.amount_ngn) }}</button>
+                    </form>
+                    {% elif logged_in %}
+                    <button class="btn btn-secondary" type="button" disabled>Checkout unavailable</button>
+                    {% else %}
+                    <a class="btn btn-primary" href="{{ url_for('user.login') }}">Sign in to Boost · ₦{{ "{:,.0f}".format(plan.amount_ngn) }}</a>
+                    {% endif %}
+                {% endfor %}
             </section>
             {% endif %}
 
             <aside class="subscription-note">
                 <span class="note-icon" aria-hidden="true">i</span>
-                <p>Prices are shown in Nigerian naira (NGN). Review the plan duration, renewal, cancellation, and refund terms before subscribing. <a href="{{ url_for('root.terms') }}">Read our Terms and Conditions</a>.</p>
+                <p>Prices are shown in Nigerian naira (NGN). Purchases are one-time and do not auto-renew. Premium time starts after Paystack confirms payment; an active Premium pass is extended when you buy another. {% if not checkout_available %}Online checkout is not configured yet; purchases are temporarily unavailable.{% endif %} <a href="{{ url_for('root.terms') }}">Read our Terms and Conditions</a>.</p>
             </aside>
         </main>
     </div>
