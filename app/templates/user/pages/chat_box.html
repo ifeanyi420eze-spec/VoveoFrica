@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block page_title %}Chat | VOVEOFRICA{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_box.css') }}">
@@ -81,12 +82,14 @@
         </main>
     </div>
 
-    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     <script>
         const otherUserId = {{ other_user.id| tojson }};
         const otherUsername = {{ other_user.username| tojson }};
         const currentUserId = {{ current_user.id| tojson }};
-        const socket = io("/chat");
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        const pusherKey = {{ config.get("PUSHER_KEY", "")|tojson }};
+        const pusherCluster = {{ config.get("PUSHER_CLUSTER", "")|tojson }};
         const messages = document.getElementById("messages");
         const emptyConversation = document.getElementById("empty-conversation");
         const form = document.getElementById("chat-form");
@@ -96,6 +99,30 @@
         const error = document.getElementById("chat-error");
         const typingIndicator = document.getElementById("typing-indicator");
         let typingTimeout;
+        let channel;
+        let pusher;
+
+        async function postChatRequest(endpoint, payload) {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify(payload)
+            });
+            let result;
+            try {
+                result = await response.json();
+            } catch (_error) {
+                result = { ok: false, error: "The chat service returned an invalid response." };
+            }
+            if (!response.ok && !result.error) {
+                result.error = "The chat request could not be completed.";
+            }
+            return result;
+        }
 
         function appendMessage(message) {
             if (emptyConversation) {
@@ -122,47 +149,82 @@
         messages.scrollTop = messages.scrollHeight;
         }
 
-        socket.on("connect", () => {
+        function connectChat() {
+            if (!pusherKey || !pusherCluster) {
+                status.textContent = "Connection unavailable";
+                error.textContent = "Real-time chat is not configured.";
+                return;
+            }
+            pusher = new Pusher(pusherKey, {
+                cluster: pusherCluster,
+                channelAuthorization: {
+                    endpoint: {{ url_for("chat.authorize_pusher_channel")|tojson }},
+                    transport: "ajax",
+                    headers: { "X-CSRFToken": csrfToken }
+                }
+            });
+            const channelName = `private-chat-${Math.min(currentUserId, otherUserId)}-${Math.max(currentUserId, otherUserId)}`;
+            channel = pusher.subscribe(channelName);
+            channel.bind("pusher:subscription_succeeded", () => {
             status.textContent = "Connected";
             error.textContent = "";
-            socket.emit("join_conversation", { other_user_id: otherUserId }, (result) => {
-                if (!result || !result.ok) {
-                    error.textContent = result?.error || "Could not join this conversation.";
-                    sendButton.disabled = true;
+            sendButton.disabled = false;
+            input.focus();
+            });
+            channel.bind("pusher:subscription_error", () => {
+                status.textContent = "Connection unavailable";
+                error.textContent = "You cannot join this conversation.";
+                sendButton.disabled = true;
+            });
+            pusher.connection.bind("state_change", (states) => {
+                if (states.current === "connected") {
+                    status.textContent = "Connected";
                     return;
                 }
-                sendButton.disabled = false;
-                input.focus();
+                status.textContent = "Disconnected. Reconnecting…";
+                sendButton.disabled = true;
             });
-        });
+            pusher.connection.bind("error", () => {
+                status.textContent = "Connection unavailable";
+                error.textContent = "Chat could not connect. Check your connection and try again.";
+                sendButton.disabled = true;
+            });
+        }
 
-        socket.on("connect_error", () => {
-            status.textContent = "Connection unavailable";
-            error.textContent = "Chat could not connect. Check your connection and try again.";
-            sendButton.disabled = true;
-        });
+        connectChat();
 
-        socket.on("disconnect", () => {
-            status.textContent = "Disconnected. Reconnecting…";
-            sendButton.disabled = true;
-        });
-
-        socket.on("new_message", (message) => {
+        channel?.bind("new-message", (message) => {
             appendMessage(message);
             if (message.sender_id !== currentUserId) {
-            socket.emit("mark_messages_read", { other_user_id: otherUserId });
-        }
+                postChatRequest({{ url_for("chat.mark_messages_read")|tojson }}, {
+                    other_user_id: otherUserId
+                }).catch(() => {
+                    error.textContent = "The message was received, but read status could not be updated.";
+                });
+            }
         });
-        socket.on("typing", (payload) => {
-            typingIndicator.textContent = payload.is_typing ? `${otherUsername} is typing…` : "";
+        channel?.bind("typing", (payload) => {
+            if (payload.user_id !== currentUserId) {
+                typingIndicator.textContent = payload.is_typing ? `${otherUsername} is typing…` : "";
+            }
         });
 
         input.addEventListener("input", () => {
-            if (!socket.connected) return;
-            socket.emit("typing", { other_user_id: otherUserId, is_typing: input.value.trim().length > 0 });
+            if (status.textContent !== "Connected") return;
+            postChatRequest({{ url_for("chat.chat_typing")|tojson }}, {
+                other_user_id: otherUserId,
+                is_typing: input.value.trim().length > 0
+            }).catch(() => {
+                error.textContent = "Typing status is temporarily unavailable.";
+            });
             window.clearTimeout(typingTimeout);
             typingTimeout = window.setTimeout(() => {
-                socket.emit("typing", { other_user_id: otherUserId, is_typing: false });
+                postChatRequest({{ url_for("chat.chat_typing")|tojson }}, {
+                    other_user_id: otherUserId,
+                    is_typing: false
+                    }).catch(() => {
+                        error.textContent = "Typing status is temporarily unavailable.";
+                    });
             }, 1200);
         });
 
@@ -180,21 +242,30 @@
 
             error.textContent = "";
             sendButton.disabled = true;
-            socket.emit("send_message", { other_user_id: otherUserId, text }, (result) => {
+            postChatRequest({{ url_for("chat.send_chat_message")|tojson }}, {
+                other_user_id: otherUserId,
+                text
+            }).then((result) => {
                 if (!result || !result.ok) {
                     error.textContent = result?.error || "The message could not be sent.";
                 } else {
                     input.value = "";
+                    if (result.realtime === false) {
+                        error.textContent = "Message saved, but live delivery could not be confirmed.";
+                    }
                 }
-                sendButton.disabled = !socket.connected;
+                sendButton.disabled = status.textContent !== "Connected";
                 input.focus();
+            }).catch(() => {
+                error.textContent = "The message could not be sent. Please try again.";
+                sendButton.disabled = status.textContent !== "Connected";
             });
         });
 
         window.addEventListener("pagehide", () => {
-            if (socket.connected) {
-                socket.emit("leave_conversation", { other_user_id: otherUserId });
-                socket.disconnect();
+            if (pusher && channel) {
+                pusher.unsubscribe(channel.name);
+                pusher.disconnect();
             }
         });
 

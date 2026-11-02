@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   contents: read
@@ -13,23 +13,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
     services:
-      mysql:
-        image: mysql:8.0
+      postgres:
+        image: postgis/postgis:16-3.4
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: VoveoFrica
-          MYSQL_USER: test
-          MYSQL_PASSWORD: test
+          POSTGRES_DB: VoveoFrica
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
         ports:
-          - 3306:3306
+          - 5432:5432
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -ptest"
+          --health-cmd="pg_isready -U test -d VoveoFrica"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
     env:
       SECRET_KEY: test-secret-key-that-is-long-enough-for-tests
-      DATABASE_URL: mysql+pymysql://test:test@127.0.0.1:3306/VoveoFrica
+      DATABASE_URL: postgresql+psycopg2://test:test@127.0.0.1:5432/VoveoFrica
       APP_ENV: testing
       SMTP_HOST: smtp.example.test
       SMTP_PORT: "587"
@@ -43,6 +42,6 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt
-      - run: python -m compileall -q pkg migrations tests
+      - run: python -m compileall -q app pkg migrations tests
       - run: flask --app run.py db upgrade
       - run: pytest -q
